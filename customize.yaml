@@ -1,0 +1,3 @@
+sensor.valhalla_cputemperatur:
+  unit_of_measurement: °C
+  

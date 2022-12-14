@@ -1,0 +1,36 @@
+#zigbee_map:
+#  title: "Zigbee Map"
+#  url: "http://homeassistant.local:8123/config/zha/visualization?config_entry=7be3d6c44fad2b6d61655b760aef7e73"
+#  icon: mdi:zigbee
+#  require_admin: true
+
+#Zugriff auf meine 3D Drucker Docker PI
+#porainer:
+#  title: "Portainer"
+#  url: "http://192.168.178.43:9000/#!/home"
+#  icon: mdi:docker
+#  require_admin: true
+
+#i3megas:
+#  title: "OctoPrint i3 Mega S"
+#  url: "http://192.168.178.43/"
+#  icon: mdi:printer-3d
+#  require_admin: true 
+#
+#chrion:
+#  title: "OctoPrint Chiron"
+#  url: "http://192.168.178.32"
+#  icon: mdi:printer-3d
+#  require_admin: true 
+
+#bitwarden:
+#  title: "Bitwarden"
+#  url: "https://muehlendick.ddns.net:7277/#/"
+#  icon: mdi:lock
+#  require_admin: true
+
+googlesheet:
+  title: "Strom und Wasser"
+  url: "https://docs.google.com/spreadsheets/d/1D3yuwulSxiKs52IAy1z-CkRhQEAScFr4T9k7IVuocLM/edit#gid=0"
+  icon: mdi:google-spreadsheet
+  require_admin: true

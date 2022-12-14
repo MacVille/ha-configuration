@@ -1,0 +1,5 @@
+56:BA:D7:39:32:37:66:13:
+  set_brightness_max: 100
+  get_brightness_max: 100
+  before_set_brightness_turn_on: false
+  config_offline_is_off: false

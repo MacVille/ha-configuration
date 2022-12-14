@@ -1,0 +1,78 @@
+staubsauger_kuche:
+  alias: Staubsauger - Küche
+  sequence:
+  - service: xiaomi_miot.call_action
+    data:
+      entity_id: vacuum.ijai_v19_620a_robot_cleaner
+      siid: 7
+      aiid: 3
+      params:
+      - '10'
+      - 0
+      - 1
+  mode: single
+staubsauger_essbereich:
+  alias: Staubsauger - Badezimmer
+  sequence:
+  - service: xiaomi_miot.call_action
+    data:
+      entity_id: vacuum.ijai_v19_620a_robot_cleaner
+      siid: 7
+      aiid: 3
+      params:
+      - '11'
+      - 0
+      - 1
+  mode: single
+staubsaugen_vorlage:
+  alias: Staubsaugen - Vorlage
+  sequence:
+  - service: xiaomi_miot.call_action
+    data:
+      entity_id: vacuum.ijai_v19_620a_robot_cleaner
+      siid: 7
+      aiid: 3
+      params:
+      - '14'
+      - 0
+      - 1
+  mode: single
+staubsauger_kinderzimmer:
+  alias: Staubsauger - Kinderzimmer
+  sequence:
+  - service: xiaomi_miot.call_action
+    data:
+      entity_id: vacuum.ijai_v19_620a_robot_cleaner
+      siid: 7
+      aiid: 3
+      params:
+      - '12'
+      - 0
+      - 1
+  mode: single
+staubsauger_flur:
+  alias: Staubsauger - Flur
+  sequence:
+  - service: xiaomi_miot.call_action
+    data:
+      entity_id: vacuum.ijai_v19_620a_robot_cleaner
+      siid: 7
+      aiid: 3
+      params:
+      - '13'
+      - 0
+      - 1
+  mode: single
+staubsauger_schlafzimmer:
+  alias: Staubsauger - Schlafzimmer
+  sequence:
+  - service: xiaomi_miot.call_action
+    data:
+      entity_id: vacuum.ijai_v19_620a_robot_cleaner
+      siid: 7
+      aiid: 3
+      params:
+      - '14'
+      - 0
+      - 1
+  mode: single

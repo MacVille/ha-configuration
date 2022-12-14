@@ -1,0 +1,46 @@
+#Benachrichtigen über E-Mail (GMX)
+- name: "Mail_SmartHome_MuehlSky"
+  platform: smtp
+  sender: !secret email_user
+  recipient:
+    - "smuehlendick@gmail.com"
+  server: "mail.gmx.net"
+  username: !secret email_user
+  password: !secret email_user_password
+  sender_name: "SmartHome MuehlSky"
+  encryption: starttls
+
+#Notify Gruppe für die Familie
+- name: Familie
+  platform: group
+  services:
+    - service: mobile_app_bellas_iphone
+    - service: mobile_app_iphone_11_pro_max
+    - service: mobile_app_ipad_von_stefan
+
+#-------------------------------------------------------------#
+#                                                             #
+#                Notify für Dateiablage                       #
+#                                                             #
+#-------------------------------------------------------------#
+- name: File_Export_Wasser
+  platform: file
+  filename: /config/exporte/Wasser.csv
+  #timestamp: true
+
+- name: File_Export_Stromdaten_taeglich
+  platform: file
+  filename: /config/exporte/Stromdaten_taeglich.csv
+
+- name: File_Export_Stromdaten_woechentlich
+  platform: file
+  filename: /config/exporte/Stromdaten_woechentlich.csv
+  #timestamp: true
+
+- name: File_Export_Stromdaten_monatlich
+  platform: file
+  filename: /config/exporte/Stromdaten_monatlich.csv
+  
+- name: File_Export_Stromdaten_jaehrlich
+  platform: file
+  filename: /config/exporte/Stromdaten_jaehrlich.csv

@@ -1,0 +1,108 @@
+#Gruppe für Lichter in Wohnzimmer
+#Wohnzimmer:
+#  name: Licht
+#  icon: mdi:lightbulb
+#  entities:
+#    - switch.licht_links
+#    - switch.licht_rechts
+
+#Zusammenfassung von Tankstellen
+#all_fuel_sensors:
+#  name: Benzinpreise
+#  all: true
+#  icon: mdi:gas-station-outline
+#  entities:
+#    - sensor.tankerkoenig_aral_tankstelle_diesel
+#    - sensor.tankerkoenig_aral_tankstelle_diesel_2
+#    - sensor.tankerkoenig_autohaus_knoepfle_diesel
+#    - sensor.tankerkoenig_avia_tankstelle_diesel
+#    - sensor.tankerkoenig_bft_tankstelle_moser_diesel
+#    - sensor.tankerkoenig_freie_tank_in_g_hagele_diesel
+#    - sensor.tankerkoenig_jet_singen_hohenkraehenstr_12_diesel
+#    - sensor.tankerkoenig_m_m_kfz_service_gmbh_diesel
+#    - sensor.tankerkoenig_mtb_tankstelle_diesel
+#    - sensor.tankerkoenig_rwg_hatten_eg_diesel
+#    - sensor.tankerkoenig_signer_gbr_diesel
+#    - sensor.tankerkoenig_tankstelle_dietrich_diesel
+#    - sensor.tankerkoenig_totalenergies_gottmadingen_diesel
+#    - sensor.tankerkoenig_ts_griessen_diesel
+#    - sensor.tankerkoenig_zg_raiffeisen_honeck_waldschutz_tankstelle_singen_diesel
+
+#Zusammenfassung von Rauchmeldern im Haus
+#all_rauchmelder_battery:
+#  name: Rauchmelder Batterie
+#  icon: mdi:battery
+#  entities:
+#    - sensor.flur_1_og_battery
+#    - sensor.kinderzimmer_1_og_battery
+#    - sensor.schlafzimmer_battery
+#    - sensor.wohnzimmer_battery
+#    - sensor.buro_eg_battery
+#    - sensor.flur_eg_battery
+#    - sensor.kinderzimmer_eg_battery
+#    - sensor.waschkuche_battery
+
+#all_rauchmelder_fault:
+#  name: Rauchmelder Fehlalarm
+#  icon: mdi:alert
+#  entities:
+#    - binary_sensor.flur_1_og_fault
+#    - binary_sensor.kinderzimmer_1_og_fault
+#    - binary_sensor.schlafzimmer_fault
+#    - binary_sensor.wohnzimmer_fault
+#    - binary_sensor.buro_eg_fault
+#    - binary_sensor.flur_eg_fault
+#    - binary_sensor.kinderzimmer_eg_fault
+
+#all_rauchmelder_smoke:
+#  name: Rauchmelder
+#  icon: mdi:smoke-detector
+#  entities:
+#    - binary_sensor.flur_1_og_smoke
+#    - binary_sensor.kinderzimmer_1_og_smoke
+#    - binary_sensor.schlafzimmer_smoke
+#    - binary_sensor.wohnzimmer_smoke
+#    - binary_sensor.buro_eg_smoke
+#    - binary_sensor.flur_eg_smoke
+#    - binary_sensor.kinderzimmer_eg_smoke
+#    - binary_sensor.waschkuche_smoke
+
+#all_rauchmelder_temperatur:
+#  name: Rauchmelder Temperatur
+#  icon: mdi:thermometer
+#  entities:
+#    - sensor.buro_eg_temperature
+#    - sensor.flur_1_og_temperature
+#    - sensor.flur_eg_temperature
+#    - sensor.kinderzimmer_1_og_temperature
+#    - sensor.kinderzimmer_eg_temperature
+#    - sensor.schlafzimmer_temperature
+#    - sensor.wohnzimmer_temperature
+#    - sensor.waschkuche_temperature
+
+#Alle Geräte mit Batterien
+#all_battiery:
+#  name: Batteriebetrieben
+#  icon: mdi:battery-30
+#  entities:
+#    - sensor.flur_1_og_battery
+#    - sensor.kinderzimmer_1_og_battery
+#    - sensor.schlafzimmer_battery
+#    - sensor.wohnzimmer_battery
+#    - sensor.buro_eg_battery
+#    - sensor.flur_eg_battery
+#    - sensor.kinderzimmer_eg_battery
+#    - sensor.waschkuche_battery
+#    - sensor.garten_battery
+#    - sensor.thermometer_hygrometer_battery
+
+
+#Familie in eine Gruppe für Device Tracking
+Familie:
+  name: Familie
+  icon: mdi:human-male-female-child
+  entities:
+      - person.stefan
+      - person.bella
+      #- person.joshi
+      #- person.nora

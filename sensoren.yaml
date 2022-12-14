@@ -1,0 +1,346 @@
+#Waste Collection Sensoren
+- platform: waste_collection_schedule
+  name: AbfallBlaueTonne
+  details_format: "upcoming"
+  value_template: "in {{value.daysTo}} Tagen"
+  types:
+    - "Blaue Tonne"
+
+- platform: waste_collection_schedule
+  name: AbfallGelberSack
+  details_format: "upcoming"
+  value_template: "in {{value.daysTo}} Tagen"
+  types:
+    - "Gelber Sack"
+
+- platform: waste_collection_schedule
+  name: AbfallRestMuell
+  details_format: "upcoming"
+  value_template: "in {{value.daysTo}} Tagen"
+  types:
+    - "Restmüll"
+
+- platform: waste_collection_schedule
+  name: AbfallSchadstoffSammlung
+  details_format: "upcoming"
+  value_template: "in {{value.daysTo}} Tagen"
+  types:
+    - "Schadstoffsammlung"
+
+- platform: waste_collection_schedule
+  name: AbfallBioTonne
+  details_format: "upcoming"
+  value_template: "in {{value.daysTo}} Tagen"
+  types:
+    - "Biotonne"
+
+- platform: waste_collection_schedule
+  name: AbfallNachster
+  details_format: "upcoming"
+  value_template: "in {{value.daysTo}} Tagen"
+
+# Minimal configuration of the standard time and date sensor
+- platform: time_date
+  display_options:
+    - "time"
+    - "date"
+
+# Tageszeit Sensor für Dashboards
+- platform: template
+  sensors:
+    time_of_day:
+      friendly_name: "Tageszeit"
+      value_template: >-
+        {% if is_state('binary_sensor.Morgen','on') %}
+          Morgen
+        {% elif is_state('binary_sensor.Mittag','on') %}
+          Mittag
+        {% elif is_state('binary_sensor.Abend','on') %}
+          Abend
+        {% else %}
+          Nacht
+        {% endif %}
+      icon_template: >-
+        {% if is_state('binary_sensor.Morgen','on') %}
+          mdi:weather-sunset-up
+        {% elif is_state('binary_sensor.Mittag','on') %}
+          mdi:white-balance-sunny
+        {% elif is_state('binary_sensor.Abend','on') %}
+          mdi:weather-sunset-down
+        {% else %}
+          mdi:weather-night
+        {% endif %}
+
+    #Zähler wieviel Lichter/Türen/Fenster im Haus An sind
+    counter_lights:
+      friendly_name: Angeschaltene Lichter
+      value_template: >-
+        {{ states.light|selectattr('state','equalto','on')|list|length }}
+    counter_doors:
+      friendly_name: offene Türen
+      value_template: >-
+        {{ states.binary_sensor | selectattr('state', 'eq', 'on') | selectattr('attributes.device_class', 'eq', 'door') | list | count | int }}
+    counter_windows:
+      friendly_name: offene Fenster
+      value_template: >-
+        {{ states.binary_sensor | selectattr('state', 'eq', 'on') | selectattr('attributes.device_class', 'eq', 'window') | list | count | int }}
+
+    #Nuki sensor.nuki_haustur_door_state nach Deutsch
+    nuki_haustuer_door_state:
+      friendly_name: "Haustür zustand"
+      value_template: >-
+        {% if is_state('binary_sensor.nuki_haustur_door_open','on') %}
+          Geöffnet
+        {% else %}
+          Geschlossen
+        {% endif %}
+      icon_template: >-
+        {% if is_state('binary_sensor.nuki_haustur_door_open','on') %}
+          mdi:door-open
+        {% else %}
+          mdi:door-closed
+        {% endif %}
+
+    #Briefkasten für Chipkarte anpassen
+    briefkasten_status:
+      friendly_name: "Briefkasten zustand"
+      value_template: >-
+        {% if is_state('input_boolean.briefkasten','on') %}
+          Post war da
+        {% else %}
+          Post war nicht da
+        {% endif %}
+      icon_template: >-
+        {% if is_state('input_boolean.briefkasten','on') %}
+          mdi:mailbox-open-up
+        {% else %}
+          mdi:mailbox
+        {% endif %}
+      unique_id: 5405660e5ff2499e8180e883dffb27d3
+
+    
+    ###################################################################
+    #                                                                 #
+    #                  Berechnen von Stromkosten                      #
+    #                                                                 #
+    ###################################################################
+
+    #Berechnung der Stomkosten in €/kWh für Hochtarif im Monat
+    stromkosten_ht:
+      friendly_name: >-
+        {% if now().month in [1,2,3,4,5,6] %}
+          Kosten für Hochtarif Sommer
+        {% else %}
+          Kosten für Hochtarif Winter
+        {% endif %}
+      value_template: >-
+        {% if now().month in [1,2,3,4,5,6] %}
+          {{ (states('sensor.stromverbrauch_hochtarif') | float * states('input_number.stromkosten_hochtarif_januar_juni') | float ) | round(2)}}
+        {% else %}
+          {{ (states('sensor.stromverbrauch_hochtarif') | float * states('input_number.stromkosten_hochtarif_juli_dezember') | float ) | round(2)}}
+        {% endif %}
+      unit_of_measurement: EUR
+      icon_template: mdi:currency-eur
+      unique_id: 19c3f876ebbe444f8ee0f11ce42dbda5
+
+    #Berechnung der Stomkosten in €/kWh für Niedertarif im Monat
+    stromkosten_nt:
+      friendly_name: >-
+        {% if now().month in [1,2,3,4,5,6] %}
+          Kosten für Niedertarif Sommer
+        {% else %}
+          Kosten für Niedertarif Winter
+        {% endif %}
+      value_template: >-
+        {% if now().month in [1,2,3,4,5,6] %}
+          {{ (states('sensor.stromverbrauch_niedertarif') | float * states('input_number.stromkosten_niedertarif_januar_juni') | float ) | round(2) }}
+        {% else %}
+          {{ (states('sensor.stromverbrauch_niedertarif') | float * states('input_number.stromkosten_niedertarif_juli_dezember') | float ) | round(2) }}
+        {% endif %}
+      unit_of_measurement: EUR
+      icon_template: mdi:currency-eur
+      unique_id: 198fd71dd162428cb6ad26a937bb39b7
+
+    #Berechnung ob Grundgebühr aussreicht oder nicht im Monat
+    stromkosten_grundgebuehr:
+      friendly_name: "Strom Grundgebühr rechnung"
+      value_template: >
+        {{ ((states('sensor.stromkosten_ht') | float + states('sensor.stromkosten_nt') | float ) - states('input_number.stromgrundgebuhr') |float ) |round(2)  }}
+      icon_template: mdi:currency-eur
+      unit_of_measurement: EUR
+      unique_id: 6a932828c77d4028af5db57adc8531d3
+
+    stromkosten_grundgebuehr_inkl_grundpreis:
+      friendly_name: "Strom Grundgebühr inkl. Grundpreis"
+      value_template: >
+        {{ (states('sensor.stromkosten_grundgebuehr') | float + states('input_number.stromgrundpreis') | float) | round(2) }}
+      icon_template: mdi:currency-eur
+      unit_of_measurement: EUR
+      unique_id: 29d75fd8ebf042379ab019cd3e223257
+
+    #Sensor für Energie Dashboard welcher dynamisch die Tarife nutzt.
+    strompreis_fuer_dashboard:
+      friendly_name: "Strompreis für Energie Dashbaord"
+      value_template: >
+        {% if now().month in [1,2,3,4,5,6] %}
+          {% if is_state('select.stromverbrauch', 'Hochtarif') %}
+            {{ states('input_number.stromkosten_hochtarif_januar_juni') }}
+          {% else %}
+            {{ states('input_number.stromkosten_niedertarif_januar_juni') }}
+          {% endif %}
+        {% else %}
+          {% if is_state('select.stromverbrauch', 'Hochtarif') %}
+            {{ states('input_number.stromkosten_hochtarif_juli_dezember') }}
+          {% else %}
+            {{ states('input_number.stromkosten_niedertarif_juli_dezember') }}
+          {% endif %}
+        {% endif %}
+      unit_of_measurement: '€/kWh'
+      icon_template: mdi:currency-eur
+      unique_id: 6361de1849dc4646906415793826b95c
+
+    ###################################################################
+    #                                                                 #
+    #          Berechnen von Stromkosten täglich HT / NT              #
+    #                                                                 #
+    ###################################################################
+    stromkosten_taeglich_ht:
+      friendly_name: >-
+        {% if now().month in [1,2,3,4,5,6] %}
+          Kosten für Hochtarif täglich Sommer
+        {% else %}
+          Kosten für Hochtarif täglich Winter
+        {% endif %}
+      value_template: >-
+        {% if now().month in [1,2,3,4,5,6] %}
+          {{ (states('sensor.strom_taglich_hochtarif') | float * states('input_number.stromkosten_hochtarif_januar_juni') | float ) | round(2)}}
+        {% else %}
+          {{ (states('sensor.strom_taglich_hochtarif') | float * states('input_number.stromkosten_hochtarif_juli_dezember') | float ) | round(2)}}
+        {% endif %}
+      #value_template: >
+      #  {{ states('sensor.stromverbrauch_hochtarif') | float * states('input_number.stromkosten_hochtarif_juli_dezember') | float | round(2)}}
+      unit_of_measurement: EUR
+      icon_template: mdi:currency-eur
+      unique_id: 2a7ed5b7a9114132a04c42728de09105
+
+    #Berechnung der Stomkosten in €/kWh für Niedertarif
+    stromkosten_taeglich_nt:
+      friendly_name: >-
+        {% if now().month in [1,2,3,4,5,6] %}
+          Kosten für Niedertarif täglich Sommer
+        {% else %}
+          Kosten für Niedertarif täglich Winter
+        {% endif %}
+      value_template: >-
+        {% if now().month in [1,2,3,4,5,6] %}
+          {{ (states('sensor.strom_taglich_niedertarif') | float * states('input_number.stromkosten_niedertarif_januar_juni') | float ) | round(2) }}
+        {% else %}
+          {{ (states('sensor.strom_taglich_niedertarif') | float * states('input_number.stromkosten_niedertarif_juli_dezember') | float ) | round(2) }}
+        {% endif %}
+      #value_template: >
+      #  {{ states('sensor.stromverbrauch_niedertarif') | float * states('input_number.stromkosten_niedertarif_juli_dezember') | round(2) }}
+      unit_of_measurement: EUR
+      icon_template: mdi:currency-eur
+      unique_id: ec53a06e8df24e8cba061b914f1c7e96
+
+    ###################################################################
+    #                                                                 #
+    #          Berechnen von Stromkosten jährlich HT / NT             #
+    #                                                                 #
+    ###################################################################
+    stromkosten_jaehrlich_ht:
+      friendly_name: >-
+        {% if now().month in [1,2,3,4,5,6] %}
+          Kosten für Hochtarif jährlich Sommer
+        {% else %}
+          Kosten für Hochtarif jährlich Winter
+        {% endif %}
+      value_template: >-
+        {% if now().month in [1,2,3,4,5,6] %}
+          {{ (states('sensor.strom_jahrlich_hochtarif') | float * states('input_number.stromkosten_hochtarif_januar_juni') | float ) | round(2)}}
+        {% else %}
+          {{ (states('sensor.strom_jahrlich_hochtarif') | float * states('input_number.stromkosten_hochtarif_juli_dezember') | float ) | round(2)}}
+        {% endif %}
+      #value_template: >
+      #  {{ states('sensor.stromverbrauch_hochtarif') | float * states('input_number.stromkosten_hochtarif_juli_dezember') | float | round(2)}}
+      unit_of_measurement: EUR
+      icon_template: mdi:currency-eur
+      unique_id: 5a88f9edbaa645e4a92919e2ac19949a
+
+    stromkosten_jaehrlich_nt:
+      friendly_name: >-
+        {% if now().month in [1,2,3,4,5,6] %}
+          Kosten für Niedertarif jahrlich Sommer
+        {% else %}
+          Kosten für Niedertarif jahrlich Winter
+        {% endif %}
+      value_template: >-
+        {% if now().month in [1,2,3,4,5,6] %}
+          {{ (states('sensor.strom_jahrlich_niedertarif') | float * states('input_number.stromkosten_niedertarif_januar_juni') | float ) | round(2) }}
+        {% else %}
+          {{ (states('sensor.strom_jahrlich_niedertarif') | float * states('input_number.stromkosten_niedertarif_juli_dezember') | float ) | round(2) }}
+        {% endif %}
+      #value_template: >
+      #  {{ states('sensor.stromverbrauch_niedertarif') | float * states('input_number.stromkosten_niedertarif_juli_dezember') | round(2) }}
+      unit_of_measurement: EUR
+      icon_template: mdi:currency-eur
+      unique_id: 663f5c6c2d3e49e7aae43e6bcdb22aeb
+
+    ###################################################################
+    #                                                                 #
+    #            Berechnen von Stromverbrauch gesamt                  #
+    #                                                                 #
+    ###################################################################
+    stromverbrauch_jaehrlich:
+      friendly_name: "Jährlicher Stromverbrauch gesamt"
+      value_template: >-
+        {{ (states('sensor.strom_jahrlich_hochtarif') | float + states('sensor.strom_jahrlich_niedertarif') | float)  | round(2) }}
+      unit_of_measurement: kWh
+      icon_template: mdi:transmission-tower-export
+      unique_id: 37228d6a567545719ddf7667221b36dd
+
+    stromverbrauch_monatlich:
+      friendly_name: "Monatlicher Stromverbrauch gesamt"
+      value_template: >-
+        {{ (states('sensor.stromverbrauch_hochtarif') | float + states('sensor.stromverbrauch_niedertarif') | float)  | round(2) }}
+      unit_of_measurement: kWh
+      icon_template: mdi:transmission-tower-export
+      unique_id: 2c97c5bf20584361b775999d5ed7c90d
+
+    stromverbrauch_taeglich:
+      friendly_name: "Täglicher Stromverbrauch gesamt"
+      value_template: >-
+        {{ (states('sensor.strom_taglich_hochtarif') | float + states('sensor.strom_taglich_niedertarif') | float)  | round(2) }}
+      unit_of_measurement: kWh
+      icon_template: mdi:transmission-tower-export
+      unique_id: e1ae21e4fcf643dbaa5b71180f39d69d
+
+    ###################################################################
+    #                                                                 #
+    #            Berechnen von Stromkosten gesamt                     #
+    #                                                                 #
+    ###################################################################
+
+    stromkosten_jaehrlich:
+      friendly_name: "Jährliche Stromkosten gesamt"
+      value_template: >-
+        {{ (states('sensor.stromkosten_jaehrlich_ht') | float + states('sensor.stromkosten_jaehrlich_nt') | float) | round(2) }}
+      unit_of_measurement: €/Monat
+      icon_template: mdi:currency-eur
+      unique_id: cf5c5bcd67664c70b28317fb11d0637f
+
+    stromkosten_monatlich:
+      friendly_name: "Monatlicher Stromkosten gesamt"
+      value_template: >-
+        {{ (states('sensor.stromkosten_ht') | float + states('sensor.stromkosten_nt') | float) | round(2) }}
+      unit_of_measurement: €/Monat
+      icon_template: mdi:currency-eur
+      unique_id: 6d2c8b3079f041f7876e877d1c54650b
+
+    stromkosten_taeglich:
+      friendly_name: "Täglicher Stromkosten gesamt"
+      value_template: >-
+        {{ (states('sensor.stromkosten_taeglich_ht') | float + states('sensor.stromkosten_taeglich_nt') | float) | round(2) }}
+      unit_of_measurement: €/Tag
+      icon_template: mdi:currency-eur
+      unique_id: e1938fe622a64dddaba66ce9e602f018

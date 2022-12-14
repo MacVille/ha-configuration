@@ -1,0 +1,15 @@
+#- authentication: basic
+#  username: !secret powerfox_login
+#  password: !secret powerfox_password
+#  scan_interval: 30
+#  resource: https://backend.powerfox.energy/api/2.0/my/main/current?unit=kwh
+#  sensor:
+#    - name: "poweropti"
+#      json_attributes:
+#        - "Watt"
+#        - "Timestamp"
+#        - "A_Plus"
+#        - "A_Minus"
+#        - "Outdated"
+#        - "A_Plus_HT"
+#        - "A_Plus_NT"

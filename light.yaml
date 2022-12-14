@@ -1,0 +1,12 @@
+- platform: switch
+  name: Licht rechts
+  entity_id: switch.licht_rechts
+- platform: switch
+  name: Licht links
+  entity_id: switch.licht_links
+- platform: switch
+  name: Licht Schuppen
+  entity_id: switch.schuppen
+- platform: switch
+  name: Mittagspause Joshua
+  entity_id: switch.mittagspause_joshi

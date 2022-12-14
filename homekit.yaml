@@ -1,0 +1,39 @@
+  - name: HASS Bridge
+    port: 21065
+    filter:
+      include_domains:
+        - cover
+        - climate
+        #- light
+        #- switch
+        #- vacuum
+      include_entity_globs:
+        - sensor.*_og*_temperature
+        - sensor.*_eg*_temperature
+        - binary_sensor.*_smoke
+        - binary_sensor.*tur*_contact
+        - sensor.garten_*
+      include_entities:
+        - light.licht_links
+        - light.licht_rechts
+        - light.licht_schuppen
+        - light.dreamview_t1
+        - switch.anycubic_chiron
+        - switch.anycubic_i3_mega
+        - sensor.thermometer_hygrometer_humidity
+        - sensor.schlafzimmer_temperature
+        - sensor.wohnzimmer_temperature
+        - sensor.stuhlkontakt_device_temperature
+        - switch.waschmaschine
+        - switch.trockner
+      #exclude_entities:
+      #  - sensor.arlobabya7_temperature
+      #  - sensor.briefkasten_device_temperature
+      #  - sensor.chiron_bed_temperature
+      #  - sensor.chiron_soc_temperature
+      #  - sensor.chiron_tool_0_temperature
+      #  - sensor.garagentur_device_temperature
+      #  - sensor.gartentur_device_temperature
+      #  - sensor.i3_mega_s_bed_temperature
+      #  - sensor.i3_mega_s_soc_temperature
+      #  - sensor.i3_mega_s_tool_0_temperature

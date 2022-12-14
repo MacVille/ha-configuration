@@ -1,0 +1,220 @@
+- platform: template
+  switches:
+    template_lichtlinks:
+      friendly_name: "Licht links"
+      value_template: "{{ is_state('switch.licht_links', 'on') }}"
+      turn_on:
+        service: switch.turn_on
+        target:
+          entity_id: switch.licht_links
+      turn_off:
+        service: switch.turn_off
+        target:
+          entity_id: switch.licht_links
+      icon_template: >-
+        {% if is_state('switch.licht_links', 'on') %}
+          mdi:lightbulb-on
+        {% else %}
+          mdi:lightbulb-off
+        {% endif %}
+
+- platform: template
+  switches:
+    template_lichtrechts:
+      friendly_name: "Licht rechts"
+      value_template: "{{ is_state('switch.licht_rechts', 'on') }}"
+      turn_on:
+        service: switch.turn_on
+        target:
+          entity_id: switch.licht_rechts
+      turn_off:
+        service: switch.turn_off
+        target:
+          entity_id: switch.licht_rechts
+      icon_template: >-
+        {% if is_state('switch.licht_rechts', 'on') %}
+          mdi:lightbulb-on
+        {% else %}
+          mdi:lightbulb-off
+        {% endif %}
+
+- platform: template
+  switches:
+    template_grouplicht:
+      friendly_name: "Licht"
+      value_template: "{{ is_state('group.wohnzimmer', 'on') }}"
+      turn_on:
+        service: switch.turn_on
+        target:
+          entity_id: group.wohnzimmer
+      turn_off:
+        service: switch.turn_off
+        target:
+          entity_id: group.wohnzimmer
+      icon_template: >-
+        {% if is_state('group.wohnzimmer', 'on') %}
+          mdi:lightbulb-on
+        {% else %}
+          mdi:lightbulb-off
+        {% endif %}
+
+- platform: template
+  switches:
+    template_wlan24ghz:
+      friendly_name: "WLAN 2.4 GHz"
+      value_template: "{{ is_state('switch.fritz_box_7490_wi_fi_wlan_muehlsky_2_4ghz', 'on') }}"
+      turn_on:
+        service: switch.turn_on
+        target:
+          entity_id: switch.fritz_box_7490_wi_fi_wlan_muehlsky_2_4ghz
+      turn_off:
+        service: switch.turn_off
+        target:
+          entity_id: switch.fritz_box_7490_wi_fi_wlan_muehlsky_2_4ghz
+      icon_template: >-
+        {% if is_state('switch.fritz_box_7490_wi_fi_wlan_muehlsky_2_4ghz', 'on') %}
+          mdi:wifi
+        {% else %}
+          mdi:wifi-off
+        {% endif %}
+
+- platform: template
+  switches:
+    template_wlan5ghz:
+      friendly_name: "WLAN 5 GHz"
+      value_template: "{{ is_state('switch.fritz_box_7490_wi_fi_wlan_muehlsky_5ghz', 'on') }}"
+      turn_on:
+        service: switch.turn_on
+        target:
+          entity_id: switch.fritz_box_7490_wi_fi_wlan_muehlsky_5ghz
+      turn_off:
+        service: switch.turn_off
+        target:
+          entity_id: switch.fritz_box_7490_wi_fi_wlan_muehlsky_5ghz
+      icon_template: >-
+        {% if is_state('switch.fritz_box_7490_wi_fi_wlan_muehlsky_5ghz', 'on') %}
+          mdi:wifi
+        {% else %}
+          mdi:wifi-off
+        {% endif %}
+
+- platform: template
+  switches:
+    template_anycubic_chiron:
+      friendly_name: "Anycubic Chiron"
+      value_template: "{{ is_state('switch.anycubic_chiron', 'on') }}"
+      turn_on:
+        service: switch.turn_on
+        target:
+          entity_id: switch.anycubic_chiron
+      turn_off:
+        service: switch.turn_off
+        target:
+          entity_id: switch.anycubic_chiron
+      icon_template: >-
+        {% if is_state('switch.anycubic_chiron', 'on') %}
+          mdi:power-plug
+        {% else %}
+          mdi:power-plug-off
+        {% endif %}
+
+- platform: template
+  switches:
+    template_anycubic_i3_mega:
+      friendly_name: "Anycubic i3 Mega"
+      value_template: "{{ is_state('switch.anycubic_i3_mega', 'on') }}"
+      turn_on:
+        service: switch.turn_on
+        target:
+          entity_id: switch.anycubic_i3_mega
+      turn_off:
+        service: switch.turn_off
+        target:
+          entity_id: switch.anycubic_i3_mega
+      icon_template: >-
+        {% if is_state('switch.anycubic_i3_mega', 'on') %}
+          mdi:power-plug
+        {% else %}
+          mdi:power-plug-off
+        {% endif %}
+
+- platform: template
+  switches:
+    template_waschmaschine:
+      friendly_name: "Waschmaschine"
+      value_template: "{{ is_state('switch.waschmaschine', 'on') }}"
+      turn_on:
+        service: switch.turn_on
+        target:
+          entity_id: switch.waschmaschine
+      turn_off:
+        service: switch.turn_off
+        target:
+          entity_id: switch.waschmaschine
+      icon_template: >-
+        {% if is_state('switch.waschmaschine', 'on') %}
+          mdi:power-socket-de
+        {% else %}
+          mdi:power-plug-off
+        {% endif %}
+
+- platform: template
+  switches:
+    template_trockner:
+      friendly_name: "Trockner"
+      value_template: "{{ is_state('switch.trockner', 'on') }}"
+      turn_on:
+        service: switch.turn_on
+        target:
+          entity_id: switch.trockner
+      turn_off:
+        service: switch.turn_off
+        target:
+          entity_id: switch.trockner
+      icon_template: >-
+        {% if is_state('switch.trockner', 'on') %}
+          mdi:power-socket-de
+        {% else %}
+          mdi:power-plug-off
+        {% endif %}
+
+- platform: template
+  switches:
+    template_lichtschuppen:
+      friendly_name: "Licht Schuppen"
+      value_template: "{{ is_state('switch.schuppen', 'on') }}"
+      turn_on:
+        service: switch.turn_on
+        target:
+          entity_id: switch.schuppen
+      turn_off:
+        service: switch.turn_off
+        target:
+          entity_id: switch.schuppen
+      icon_template: >-
+        {% if is_state('switch.schuppen', 'on') %}
+          mdi:lightbulb-on
+        {% else %}
+          mdi:lightbulb-off
+        {% endif %}
+
+- platform: template
+  switches:
+    mittagspause_joshi:
+      friendly_name: Mittagspause Joshua
+      value_template: "{{ is_state('input_boolean.mittagspause', 'on') }}"
+      turn_on:
+        service: input_boolean.turn_on
+        target:
+          entity_id: input_boolean.mittagspause
+      turn_off:
+        service: input_boolean.turn_off
+        target:
+          entity_id: input_boolean.mittagspause
+      icon_template: >-
+        {% if is_state('input_boolean.mittagspause', 'on') %}
+          mdi:toggle-switch-variant
+        {% else %}
+          mdi:toggle-switch-variant-off
+        {% endif %}
+      unique_id: ec7820ba5531434aba7d090c6ce04504

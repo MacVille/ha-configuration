@@ -1,0 +1,167 @@
+- sensor:
+    ###################################################################
+    #                                                                 #
+    #             Definition von Allgemeinen Template                 #
+    #                         Sensoren                                #
+    #                                                                 #
+    ###################################################################
+    - name: "Template Date"
+      state: "{{ as_timestamp(states('sensor.date')) | timestamp_custom('%d.%m') }}"
+      icon: "mdi:calendar-today"
+    #- name: "Template Date Time"
+    #  state: "{{ as_timestamp(states('sensor.date')) | timestamp_custom('%d.%m.%Y %H:%M') }}"
+    #  icon: "mdi:calendar-clock"
+
+    - name: "Wonderwall IST Temperatur"
+      unit_of_measurement: °C
+      device_class: temperature
+      state: >
+          {{ state_attr('climate.wonderwall_smart', 'current_temperature')}}
+      unique_id: 82469c60483444c5b9c0d2178938bce1
+      icon: mdi:thermometer
+
+    ###################################################################
+    #                                                                 #
+    #           Definition von Sensoren für Stromzähler               #
+    #                                                                 #
+    ###################################################################
+    - name: "Strom aktuell"
+      unit_of_measurement: "W"
+      device_class: "power"
+      state_class: "measurement"
+      state: >
+          {{ states('sensor.stromzahler_strom_power_cur') }}
+      unique_id: 6e11e4dd228b4b6785dbfd4dbb1d03bd
+      icon: mdi:sine-wave
+
+    - name: "Strom Bezug"
+      unit_of_measurement: "kWh"
+      device_class: "energy"
+      state_class: "total_increasing"
+      state: >
+          {{ states('sensor.stromzahler_strom_total_in') }}
+      unique_id: 070dd7d65643472caaae6847b18d6e63
+      icon: mdi:transmission-tower-export
+
+    - name: "Stromzählerstand HT"
+      unit_of_measurement: "kWh"
+      device_class: "energy"
+      state_class: "total_increasing"
+      state: >
+          {{ states('sensor.stromzahler_strom_ht') }}
+      unique_id: f6e04b5ffe0442158832999db20b4c54
+      icon: mdi:meter-electric
+
+    - name: "Stromzählerstand NT"
+      unit_of_measurement: "kWh"
+      device_class: "energy"
+      state_class: "total_increasing"
+      state: >
+          {{ states('sensor.stromzahler_strom_nt') }}
+      unique_id: 3cc79eb94ada4243af10af6b175d839e
+      icon: mdi:meter-electric
+
+    - name: "Strom Einspeisung"
+      unit_of_measurement: "kWh"
+      device_class: "energy"
+      state_class: "total_increasing"
+      state: >
+          {{ states('sensor.stromzahler_strom_total_out') }}
+      unique_id: 50782357bf2648fab5c2d9ebca5d0a3f
+      icon: mdi:transmission-tower-import
+
+    ###################################################################
+    #                                                                 #
+    #          Definition von Sensoren für Wasserzähler               #
+    #                       m³ zu Liter                               #
+    #                                                                 #
+    ###################################################################
+    - name: "Watermeter in l"
+      unique_id: watermeter_in_l
+      icon: "mdi:gauge"
+      state: "{{ states('sensor.watermeter_value')|float(default=0) * 1000 }}" # Convert 1 m3 => 1000 l
+      unit_of_measurement: l
+      availability: "{{ states('sensor.watermeter_value') not in ['unknown', 'unavailable', 'none'] }}"
+
+    ###################################################################
+    #                                                                 #
+    #           Definition von Sensoren für Stromzähler               #
+    #                          alt                                    #
+    #                                                                 #
+    ###################################################################
+#    #powerfox Templatesensoren
+#      - name: "Strom aktuell"
+#        unit_of_measurement: "W"
+#        device_class: "power"
+#        state_class: "measurement"
+#        state: >
+#            {{ state_attr('sensor.poweropti', 'Watt') }}
+#        unique_id: 0fdb0511c7dd43cb90098237b7c06313
+#        icon: mdi:sine-wave
+#
+#      - name: "Strom Bezug"
+#        unit_of_measurement: "kWh"
+#        device_class: "energy"
+#        state_class: "total_increasing"
+#        state: >
+#            {{ state_attr('sensor.poweropti', 'A_Plus') }}
+#        unique_id: 83ed394e88234fefbe5af93390e4f90c
+#        icon: mdi:transmission-tower-export
+#
+#      - name: "Stromzählerstand Insgesamt"
+#        unit_of_measurement: "kWh"
+#        device_class: "energy"
+#        state_class: "total_increasing"
+#        state: >
+#            {{ state_attr('sensor.poweropti', 'A_Plus') }}
+#        unique_id: a72e8a34647b44a8b89385249143213c
+#
+#      - name: "Stromzählerstand HT"
+#        unit_of_measurement: "kWh"
+#        device_class: "energy"
+#        state_class: "total_increasing"
+#        state: >
+#            {{ state_attr('sensor.poweropti', 'A_Plus_HT') }}
+#        unique_id: c1e2e5f7ab244326823ab26fe8607e94
+#        icon: mdi:meter-electric
+#
+#      - name: "Stromzählerstand NT"
+#        unit_of_measurement: "kWh"
+#        device_class: "energy"
+#        state_class: "total_increasing"
+#        state: >
+#            {{ state_attr('sensor.poweropti', 'A_Plus_NT') }}
+#        unique_id: 1f948e1accf4431896b2f416a2acf5d6
+#        icon: mdi:meter-electric
+#
+#      - name: "PowerOpti Outdated"
+#        state: >
+#            {{ state_attr('sensor.poweropti', 'Outdated') }}
+#        icon: mdi:database-edit
+#        unique_id: 154a40949cb84c1683b32a508377ae59
+#
+#      - name: "Strom Einspeisung"
+#        unit_of_measurement: "kWh"
+#        device_class: "energy"
+#        state_class: "total_increasing"
+#        state: >
+#            {{ state_attr('sensor.poweropti', 'A_Minus') }}
+#        unique_id: c6c5adc8db634eca8ed2a4a5070338ed
+#        icon: mdi:transmission-tower-import
+#
+#- binary_sensor:
+#    - name: "PowerOpti Outdated"
+#      state: >
+#        {% if is_state('sensor.PowerOpti_Outdated', 'False') -%}
+#          off
+#        {%- else -%}
+#          on
+#        {%- endif %}
+#      icon: >
+#        {% if is_state('sensor.PowerOpti_Outdated', 'False') -%}
+#          mdi:toggle-switch-off
+#        {%- else -%}
+#          mdi:toggle-switch
+#        {%- endif %}
+#      unique_id: a4a70a07ee0c49c5b79207f5766aff33
+#
