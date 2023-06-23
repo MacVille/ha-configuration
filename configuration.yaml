@@ -1,7 +1,8 @@
 # Configure a default setup of Home Assistant (frontend, api, etc)
 default_config:
 fontawesome:
-
+api:
+  
 # Text to speech
 tts:
   - platform: google_translate
@@ -11,10 +12,6 @@ group: !include groups.yaml
 automation: !include automations.yaml
 script: !include scripts.yaml
 scene: !include scenes.yaml
-sensor: !include sensoren.yaml
-switch: !include switch.yaml
-template: !include template.yaml
-panel_iframe: !include panel_iframe.yaml
 
 homeassistant:
   customize: !include customize.yaml
@@ -23,6 +20,7 @@ frontend:
   themes: !include_dir_merge_named themes
   extra_module_url:
     - /local/card-mod.js
+    - /local/community/custom-brand-icons/custom-brand-icons.js
 
 powercalc:
 
@@ -34,6 +32,13 @@ light: !include light.yaml
 notify: !include notify.yaml
 mqtt: !include mqtt.yaml
 homekit: !include homekit.yaml
+sensor: !include sensoren.yaml
+switch: !include switch.yaml
+template: !include template.yaml
+panel_iframe: !include panel_iframe.yaml
+fan: !include fan.yaml
+#scrape: !include scrape.yaml
+#snmp: !include snmp.yaml
 #camera: !include camera.yaml
 #rest: !include rest.yaml
 
@@ -41,17 +46,30 @@ homekit: !include homekit.yaml
 emulated_hue:
   host_ip: 192.168.178.53
   listen_port: 80
+  #off_map_to_on_domains:
+  expose_by_default: false
+  exposed_domains:
+    - light
+    - switch
   entities:
-    light.licht_rechts:
-      name: "Licht rechts"
-    light.licht_links:
-      name: "Licht links"
     light.licht_schuppen:
       name: "Licht Schuppen"
+      hidden: false
     light.dreamview_t1:
       name: "Ambilight"
-    light.mittagapuse_joshua:
+      hidden: false
+    light.mittagspause_joshua:
       name: "Mittagspause Joshua"
+      hidden: false
+    light.ikea_icpshc24_30eu_il_1:
+      name: "Licht Kueche"
+      hidden: false
+    switch.licht_links:
+      name: "Licht links"
+      hidden: false
+    switch.licht_rechts:
+      name: "Licht rechts"
+      hidden: false
 
 #Telegram Bot Settings
 telegram_bot:
@@ -60,13 +78,13 @@ telegram_bot:
     allowed_chat_ids:
       - 406580581
 
-#calendar:
-#  - platform: caldav
-#    username: !secret icloud_login
-#    password: !secret icloud_password
-#    url: !secret icloud_url
-#    calendars:
-#      - "Familie"
+calendar:
+  - platform: caldav
+    username: !secret icloud_login
+    password: !secret icloud_password
+    url: !secret icloud_url
+    calendars:
+      - "Familie"
 
 #Settings für NGINX Proxy Manager
 http:
@@ -109,9 +127,22 @@ http:
 
 #History Daten nurnoch in MySQL Server
 recorder:
-#  db_url: mysql://homeassistant:homeassistant@192.168.178.2:3306/homeassistant?charset=utf8
-#MariaDB Addon
   db_url: mysql://homeassistant:homeassistant@core-mariadb/homeassistant?charset=utf8mb4
   exclude:
     entities:
       - sensor.rewe_865799
+      - sensor.time
+
+influxdb:
+  api_version: 2
+  ssl: false
+  host: 192.168.178.2
+  port: 27025
+  token: !secret influx_token
+  organization: !secret influx_organization
+  bucket: homeassistant
+  tags:
+    source: HA
+  tags_attributes:
+    - friendly_name
+  default_measurement: units

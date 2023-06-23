@@ -1,0 +1,6 @@
+#- resource: https://forum.makemkv.com/forum/viewtopic.php?f=5&t=1053
+#  sensor:
+#    - name: "MakeMKV Key"
+#      select: ".codebox pre code"
+#      unique_id: 4ae016d19973462b9ae445ca9096c497
+#      icon: mdi:license

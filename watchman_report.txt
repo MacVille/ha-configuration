@@ -1,0 +1,26 @@
+-== Watchman Report ==- 
+
+-== Congratulations, all 43 services from your config are available!
+
+-== Missing 8 entity(ies) from 174 found in your config:
++--------------------------------+---------+--------------------------------------------------------------+
+| Entity ID                      | State   | Location                                                     |
++--------------------------------+---------+--------------------------------------------------------------+
+| sensor.valhalla_cputemperatur  | unavail | customize.yaml:1                                             |
+| ('VALHALLA_cputemperatur')     |         |                                                              |
+| switch.schuppen ('Schuppen')   | unavail | light.yaml:9                                                 |
+| sensor.wasserzaehler           | missing | automations.yaml:533,543                                     |
+| sensor.wasser_verbrauch        | missing | automations.yaml:534                                         |
+| binary_sensor.stuhlkontakt_con | missing | automations.yaml:617                                         |
+| tact                           |         |                                                              |
+| binary_sensor.nuki_haustur_loc | missing | automations.yaml:652                                         |
+| ked                            |         |                                                              |
+| light.licht_schuppen ('Licht   | unavail | homekit.yaml:26                                              |
+| Schuppen')                     |         |                                                              |
+| remote.broadlink_rm4_mini_remo | unavail | scripts.yaml:210,223,236                                     |
+| te                             |         |                                                              |
++--------------------------------+---------+--------------------------------------------------------------+
+
+-== Report created on 21 May 2023 08:54:40
+-== Parsed 56 files in 0.23s., ignored 2 files 
+-== Generated in: 0.03s. Validated in: 0.00s.

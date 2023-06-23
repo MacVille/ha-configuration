@@ -1,0 +1,35 @@
+#- platform: template
+#  fans:
+#    buero_eg_fan:
+#      friendly_name: "Ventilator Büro EG"
+#      value_template: "{{ states('input_boolean.ventilator_an') }}"
+#      percentage_template: "{{ states('input_number.ventilator_percentage') }}"
+#      preset_mode_template: "{{ states('input_select.ventilator_preset_mode') }}"
+#      oscillating_template: "{{ states('input_select.ventilator_osc') }}"
+#      direction_template: "{{ states('input_select.ventilator_direction') }}"
+#      turn_on:
+#        service: script.ventilator_anschalten
+#      turn_off:
+#        service: script.ventilator_ausschalten
+#      set_percentage:
+#        service: script.ventilator_geschwindigkeit_hoch
+#        data:
+#          percentage: "{{ percentage }}"
+#      set_preset_mode:
+#        service: script.fans_set_preset_mode
+#        data:
+#          preset_mode: "{{ preset_mode }}"
+#      set_oscillating:
+#        service: script.ventilator_schwingen_links_rechts
+#        data:
+#          oscillating: "{{ oscillating }}"
+#      set_direction:
+#        service: script.fan_direction
+#        data:
+#          direction: "{{ direction }}"
+#      speed_count: 12
+#      preset_modes:
+#        - 'auto'
+#        - 'smart'
+#        - 'whoosh'
+#      unique_id: 804d96a7a437482986b4b156c37e535c

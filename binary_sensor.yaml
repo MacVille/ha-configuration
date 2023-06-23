@@ -17,9 +17,9 @@
 
     last_day_of_the_month:
       friendly_name: 'Letzer Tag des Monats'
-      entity_id: sensor.date
       icon_template: "mdi:calendar"
-      value_template: "{{ (as_timestamp(now()) + 86400) | timestamp_custom('%d', true) | int == 1 }}"
+      value_template: "{{ (now() + timedelta(days=1)).day == 1 }}"
+      unique_id: c3966e047e2e445db0236003d9a1f5d0
 
 - platform: tod
   name: Morgen
@@ -38,7 +38,3 @@
   name: Nacht
   after: "22:00"
   before: sunrise
-
-- platform: workday
-  country: DE
-  province: BW

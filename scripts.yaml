@@ -76,3 +76,243 @@ staubsauger_schlafzimmer:
       - 0
       - 1
   mode: single
+benachrichtigung_waschtemperatur:
+  alias: '[Benachrichtigung] Waschtemperatur'
+  sequence:
+  - service: notify.familie
+    data:
+      title: Waschmaschine wurde angeschaltet
+      message: Bitte wähle die Waschtemperatur aus
+      data:
+        actions:
+        - action: TEMP_30
+          title: Waschtemperatur 30°
+        - action: TEMP_40
+          title: Waschtemperatur 40°
+        - action: TEMP_90
+          title: Waschtemperatur 90°
+        - action: IGNORIEREN
+          title: Nichts auswählen
+          icon: sfsymbols:xmark
+          destructive: true
+  mode: single
+actions_automation_waschmaschine_ende:
+  alias: '[Actions] Automation Waschmaschine Ende'
+  sequence:
+  - service: counter.increment
+    data: {}
+    target:
+      entity_id: counter.waschzyklen
+  - service: input_boolean.turn_off
+    data: {}
+    target:
+      entity_id: input_boolean.waschmaschine_lauft
+  - service: notify.familie
+    data:
+      message: Die Waschmaschine ist fertig! Hol die Wäsche raus
+      title: Waschmaschine
+  - type: turn_off
+    device_id: d8fbe6ea6daa3c2efa0cb6c1a44d9d56
+    entity_id: switch.waschmaschine
+    domain: switch
+    enabled: true
+  - service: input_datetime.set_datetime
+    data_template:
+      datetime: '{{ now().strftime(''%Y-%m-%d %H:%M:%S'')}}'
+    target:
+      entity_id: input_datetime.waschmaschine_endzeit
+  - service: input_datetime.set_datetime
+    data_template:
+      datetime: '{{(((state_attr(''input_datetime.waschmaschine_endzeit'' , ''timestamp''))
+        - 300) | timestamp_custom(''%Y-%m-%d %H:%M'', true))}}'
+    target:
+      entity_id: input_datetime.waschmaschine_endzeit
+    alias: Setze Waschmaschine Endzeit -5 Minuten
+  - service: notify.file_export_waschmaschine_verlauf_temp_strom
+    data:
+      message: '{{ now().strftime(''%d.%m.%Y'') }};{{states.input_datetime.waschmaschine_startzeit.state
+        }};{{states.input_datetime.waschmaschine_endzeit.state }};{{states.sensor.verbrauchszahler_waschmaschine.state
+        | replace(".",",")}};{{states.input_text.waschtemperatur.state}};'
+      title: Timestamp;Startzeit;Endzeit;kWh Verbraucht;Waschtemperatur;
+  - service: google_sheets.append_sheet
+    data:
+      config_entry: a06f7a900a95db5053d1b3b52778151e
+      worksheet: Waschmaschine
+      data:
+        created: '{{ now().strftime(''%d.%m.%Y'') }}'
+        Startzeit: '{{states.input_datetime.waschmaschine_startzeit.state}}'
+        Endzeit: '{{states.input_datetime.waschmaschine_endzeit.state}}'
+        kWh Verbraucht: '{{states.sensor.verbrauchszahler_waschmaschine.state}}'
+        Waschtemperatur: '{{states.input_text.waschtemperatur.state}}'
+  - service: utility_meter.calibrate
+    data:
+      value: '0'
+    target:
+      entity_id: sensor.verbrauchszahler_waschmaschine
+  - service: input_text.set_value
+    data:
+      value: 0°
+    target:
+      entity_id: input_text.waschtemperatur
+  mode: single
+actions_setzen_hochtarif:
+  alias: '[Actions] Verbrauchszähler auf Hochtarif setzen'
+  sequence:
+  - service: select.select_option
+    data:
+      option: Hochtarif
+    target:
+      entity_id:
+      - select.stromverbrauch
+      - select.strom_taglich
+      - select.strom_jahrlich
+      - select.strom_wochentlich
+      - select.homelab_stromverbrauch_jahrlich
+      - select.homelab_stromverbrauch_monatlich
+      - select.homelab_stromverbrauch_wochentlich
+      - select.homelab_stromverbrauch_taglich
+      - select.heizung_buro_eg_taglich
+      - select.heizung_buro_eg_monatlich
+      - select.heizung_buro_eg_jahrlich
+      - select.heizung_buro_eg_wochentlich
+  mode: single
+neues_skript:
+  alias: '[Actions] Verbrauchszähler auf Niedertraif setzen'
+  sequence:
+  - service: select.select_option
+    data:
+      option: Niedertarif
+    target:
+      entity_id:
+      - select.stromverbrauch
+      - select.strom_taglich
+      - select.strom_jahrlich
+      - select.strom_wochentlich
+      - select.homelab_stromverbrauch_jahrlich
+      - select.homelab_stromverbrauch_monatlich
+      - select.homelab_stromverbrauch_taglich
+      - select.homelab_stromverbrauch_wochentlich
+      - select.heizung_buro_eg_jahrlich
+      - select.heizung_buro_eg_monatlich
+      - select.heizung_buro_eg_taglich
+      - select.heizung_buro_eg_wochentlich
+  mode: single
+weihnachtsbaum_kerzen_an:
+  alias: '[Weihnachtsbaum] Kerzen an'
+  sequence:
+  - service: remote.send_command
+    data:
+      device: Lichterkette
+      command: kerzen_leuchten
+      num_repeats: 2
+      delay_secs: 0.5
+    target:
+      entity_id: remote.broadlink_rm4_mini_remote
+  mode: single
+  icon: mdi:candle
+weihnachtsbaum_kerzen_flackern:
+  alias: '[Weihnachtsbaum] Kerzen flackern'
+  sequence:
+  - service: remote.send_command
+    data:
+      device: Lichterkette
+      command: kerzen_flackern
+      num_repeats: 2
+      delay_secs: 0.5
+    target:
+      entity_id: remote.broadlink_rm4_mini_remote
+  mode: single
+  icon: mdi:candle
+weihnachtsbaum_kerzen_aus:
+  alias: '[Weihnachtsbaum] Kerzen aus'
+  sequence:
+  - service: remote.send_command
+    data:
+      device: Lichterkette
+      command: kerzen_aus
+      num_repeats: 2
+      delay_secs: 0.5
+    target:
+      entity_id: remote.broadlink_rm4_mini_remote
+  mode: single
+  icon: mdi:candle
+ventilator_anschalten:
+  alias: '[Ventilator] Anschalten'
+  sequence:
+  - service: remote.send_command
+    data:
+      device: fan
+      command: 'on'
+    target:
+      entity_id: remote.broadlink_rm4_mini_remote
+  mode: single
+ventilator_ausschalten:
+  alias: '[Ventilator] Ausschalten'
+  sequence:
+  - service: remote.send_command
+    data:
+      device: fan
+      command: 'on'
+    target:
+      entity_id: remote.broadlink_rm4_mini_remote
+  mode: single
+ventilator_geschwindigkeit_hoch:
+  alias: '[Ventilator] Geschwindigkeit hoch'
+  sequence:
+  - service: remote.send_command
+    data:
+      device: fan
+      command: fan_speed_up
+    target:
+      entity_id: remote.broadlink_rm4_mini_remote
+  mode: single
+ventilator_geschwindigkeit_runter:
+  alias: '[Ventilator] Geschwindigkeit runter'
+  sequence:
+  - service: remote.send_command
+    data:
+      device: fan
+      command: fan_speed_down
+    target:
+      entity_id: remote.broadlink_rm4_mini_remote
+  mode: single
+ventilator_schwenken_hoch_runter:
+  alias: '[Ventilator] Schwenken Hoch / Runter'
+  sequence:
+  - service: remote.send_command
+    data:
+      device: fan
+      command: fan_swivel_up_down
+    target:
+      entity_id: remote.broadlink_rm4_mini_remote
+  mode: single
+ventilator_schwingen_links_rechts:
+  alias: '[Ventilator] Schwingen Links / Rechts'
+  sequence:
+  - service: remote.send_command
+    data:
+      device: fan
+      command: fan_swivel_left_right
+    target:
+      entity_id: remote.broadlink_rm4_mini_remote
+  mode: single
+ventilator_timer:
+  alias: '[Ventilator] Timer'
+  sequence:
+  - service: remote.send_command
+    data:
+      device: fan
+      command: fan_timer
+    target:
+      entity_id: remote.broadlink_rm4_mini_remote
+  mode: single
+ventilator_eco_mode:
+  alias: '[Ventilator] Eco Mode'
+  sequence:
+  - service: remote.send_command
+    data:
+      device: fan
+      command: fan_eco_modes
+    target:
+      entity_id: remote.broadlink_rm4_mini_remote
+  mode: single

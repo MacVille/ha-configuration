@@ -1,0 +1,82 @@
+
+###################################################################
+#                                                                 #
+#           Definition von Sensoren für Stromzähler               #
+#                          alt                                    #
+#                                                                 #
+###################################################################
+#    #powerfox Templatesensoren
+#      - name: "Strom aktuell"
+#        unit_of_measurement: "W"
+#        device_class: "power"
+#        state_class: "measurement"
+#        state: >
+#            {{ state_attr('sensor.poweropti', 'Watt') }}
+#        unique_id: 0fdb0511c7dd43cb90098237b7c06313
+#        icon: mdi:sine-wave
+#
+#      - name: "Strom Bezug"
+#        unit_of_measurement: "kWh"
+#        device_class: "energy"
+#        state_class: "total_increasing"
+#        state: >
+#            {{ state_attr('sensor.poweropti', 'A_Plus') }}
+#        unique_id: 83ed394e88234fefbe5af93390e4f90c
+#        icon: mdi:transmission-tower-export
+#
+#      - name: "Stromzählerstand Insgesamt"
+#        unit_of_measurement: "kWh"
+#        device_class: "energy"
+#        state_class: "total_increasing"
+#        state: >
+#            {{ state_attr('sensor.poweropti', 'A_Plus') }}
+#        unique_id: a72e8a34647b44a8b89385249143213c
+#
+#      - name: "Stromzählerstand HT"
+#        unit_of_measurement: "kWh"
+#        device_class: "energy"
+#        state_class: "total_increasing"
+#        state: >
+#            {{ state_attr('sensor.poweropti', 'A_Plus_HT') }}
+#        unique_id: c1e2e5f7ab244326823ab26fe8607e94
+#        icon: mdi:meter-electric
+#
+#      - name: "Stromzählerstand NT"
+#        unit_of_measurement: "kWh"
+#        device_class: "energy"
+#        state_class: "total_increasing"
+#        state: >
+#            {{ state_attr('sensor.poweropti', 'A_Plus_NT') }}
+#        unique_id: 1f948e1accf4431896b2f416a2acf5d6
+#        icon: mdi:meter-electric
+#
+#      - name: "PowerOpti Outdated"
+#        state: >
+#            {{ state_attr('sensor.poweropti', 'Outdated') }}
+#        icon: mdi:database-edit
+#        unique_id: 154a40949cb84c1683b32a508377ae59
+#
+#      - name: "Strom Einspeisung"
+#        unit_of_measurement: "kWh"
+#        device_class: "energy"
+#        state_class: "total_increasing"
+#        state: >
+#            {{ state_attr('sensor.poweropti', 'A_Minus') }}
+#        unique_id: c6c5adc8db634eca8ed2a4a5070338ed
+#        icon: mdi:transmission-tower-import
+#
+#- binary_sensor:
+#    - name: "PowerOpti Outdated"
+#      state: >
+#        {% if is_state('sensor.PowerOpti_Outdated', 'False') -%}
+#          off
+#        {%- else -%}
+#          on
+#        {%- endif %}
+#      icon: >
+#        {% if is_state('sensor.PowerOpti_Outdated', 'False') -%}
+#          mdi:toggle-switch-off
+#        {%- else -%}
+#          mdi:toggle-switch
+#        {%- endif %}
+#      unique_id: a4a70a07ee0c49c5b79207f5766aff33

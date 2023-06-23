@@ -1,39 +1,47 @@
-  - name: HASS Bridge
-    port: 21065
-    filter:
-      include_domains:
-        - cover
-        - climate
-        #- light
-        #- switch
-        #- vacuum
-      include_entity_globs:
-        - sensor.*_og*_temperature
-        - sensor.*_eg*_temperature
-        - binary_sensor.*_smoke
-        - binary_sensor.*tur*_contact
-        - sensor.garten_*
-      include_entities:
-        - light.licht_links
-        - light.licht_rechts
-        - light.licht_schuppen
-        - light.dreamview_t1
-        - switch.anycubic_chiron
-        - switch.anycubic_i3_mega
-        - sensor.thermometer_hygrometer_humidity
-        - sensor.schlafzimmer_temperature
-        - sensor.wohnzimmer_temperature
-        - sensor.stuhlkontakt_device_temperature
-        - switch.waschmaschine
-        - switch.trockner
-      #exclude_entities:
-      #  - sensor.arlobabya7_temperature
-      #  - sensor.briefkasten_device_temperature
-      #  - sensor.chiron_bed_temperature
-      #  - sensor.chiron_soc_temperature
-      #  - sensor.chiron_tool_0_temperature
-      #  - sensor.garagentur_device_temperature
-      #  - sensor.gartentur_device_temperature
-      #  - sensor.i3_mega_s_bed_temperature
-      #  - sensor.i3_mega_s_soc_temperature
-      #  - sensor.i3_mega_s_tool_0_temperature
+- name: HASS Bridge
+  port: 21065
+  filter:
+    include_domains:
+      - cover
+      - climate
+
+    include_entity_globs:
+      #Alle Rauchmelder
+      - binary_sensor.*_smoke
+
+      #Alle Türen und Fensterkontakte
+      - binary_sensor.*tur*_contact
+      - binary_sensor.fensterkontakt_*_contact
+
+      #Temperaturen des Shelly HT
+      - sensor.garten_*
+
+      #Alle Ikea Lichter
+      - light.ikea_*
+
+    include_entities:
+      #Alle Restlichen Lichter
+      - light.licht_links
+      - light.licht_rechts
+      - light.licht_schuppen
+      - light.dreamview_t1
+      
+      #Temperatur und Luftfeutigkeitssensoren
+      - sensor.thermometer_hygrometer_humidity
+      #- sensor.stuhlkontakt_device_temperature
+
+      #Sonoff Geräte
+      - sensor.kinderzimmer_1_og_sonoff_temperature
+      - sensor.kinderzimmer_eg_sonoff_temperature
+      - sensor.schlafzimmer_sonoff_temperature
+      - sensor.wohnzimmer_sonoff_temperature
+      - sensor.kinderzimmer_1_og_sonoff_humidity
+      - sensor.kinderzimmer_eg_sonoff_humidity
+      - sensor.schlafzimmer_sonoff_humidity
+      - sensor.wohnzimmer_sonoff_humidity
+
+      #Schlater die in HomeKit sein sollen
+      - switch.anycubic_chiron
+      - switch.anycubic_i3_mega
+      - switch.waschmaschine
+      - switch.trockner

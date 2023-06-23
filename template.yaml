@@ -72,96 +72,120 @@
 
     ###################################################################
     #                                                                 #
-    #          Definition von Sensoren für Wasserzähler               #
-    #                       m³ zu Liter                               #
+    #          Definition von Sensoren für Luftfeuchte                #
     #                                                                 #
     ###################################################################
-    - name: "Watermeter in l"
-      unique_id: watermeter_in_l
-      icon: "mdi:gauge"
-      state: "{{ states('sensor.watermeter_value')|float(default=0) * 1000 }}" # Convert 1 m3 => 1000 l
-      unit_of_measurement: l
-      availability: "{{ states('sensor.watermeter_value') not in ['unknown', 'unavailable', 'none'] }}"
+    # Errechnet aus der relativen Luftfeuchtigkeit und Temperatur außen die absolute Luftfreuchtigkeit in Gramm pro Kubikmeter
+    - name: "Absolute Luftfeuchtigkeit außen"
+      unique_id: c2fe1f97f40f4cbbbbdaff08add08932
+      unit_of_measurement: "g/m³"
+      state: >-
+          {{ ( 1000*e**(19.016-(4064.95/(float(states('sensor.garten_temperature'))+236.25)))*100/(461.66*(float(states('sensor.garten_temperature'))+273.15)) * float(states('sensor.garten_humidity'))/100 | float) | round (2) }}
+
+    ##########################Büro EG##################################
+    # Errechnet aus der relativen Luftfeuchtigkeit und Temperatur im Innenraum die absolute Luftfreuchtigkeit in Gramm pro Kubikmeter
+    - name: "Absolute Luftfeuchtigkeit Büro EG"
+      unique_id: b6ef1534bb3145dc90f91b5cf25d7587
+      unit_of_measurement: "g/m³"
+      state: >- 
+          {{ ( 1000*e**(19.016-(4064.95/(float(states('sensor.thermometer_hygrometer_temperature'))+236.25)))*100/(461.66*(float(states('sensor.thermometer_hygrometer_temperature'))+273.15)) * float(states('sensor.thermometer_hygrometer_humidity'))/100 | float) | round (2) }}
+    # Errechnet den Untschied der Luftfeuchte von innen und außen in Gramm pro Kubikmeter
+    - name: "Absolute Luftfeuchtigkeit Unterschied Büro EG"
+      unique_id: 4120713d1b3f4fed8b1960dbd4da6b20
+      unit_of_measurement: "g/m³"
+      state: >-
+          {{ ( float(states('sensor.absolute_luftfeuchtigkeit_buro_eg')) - float(states('sensor.absolute_luftfeuchtigkeit_aussen')) ) | float | round (2) }}
+    ##########################Büro EG##################################
+
+    #################Kinderzimmer EG###################################
+    # Errechnet aus der relativen Luftfeuchtigkeit und Temperatur im Innenraum die absolute Luftfreuchtigkeit in Gramm pro Kubikmeter
+    - name: "Absolute Luftfeuchtigkeit Kinderzimmer EG"
+      unique_id: 884c5753e9ac423990c346841e1a817d
+      unit_of_measurement: "g/m³"
+      state: >- 
+          {{ ( 1000*e**(19.016-(4064.95/(float(states('sensor.kinderzimmer_eg_sonoff_temperature'))+236.25)))*100/(461.66*(float(states('sensor.kinderzimmer_eg_sonoff_temperature'))+273.15)) * float(states('sensor.kinderzimmer_eg_sonoff_humidity'))/100 | float) | round (2) }}
+    # Errechnet den Untschied der Luftfeuchte von innen und außen in Gramm pro Kubikmeter
+    - name: "Absolute Luftfeuchtigkeit Unterschied Kinderzimmer EG"
+      unique_id: bb364a0aeb03442387ce9638d200f441
+      unit_of_measurement: "g/m³"
+      state: >-
+          {{ ( float(states('sensor.absolute_luftfeuchtigkeit_kinderzimmer_eg')) - float(states('sensor.absolute_luftfeuchtigkeit_aussen')) ) | float | round (2) }}
+    #################Kinderzimmer EG###################################
+
+    ######################Schlafzimmer#################################
+    # Errechnet aus der relativen Luftfeuchtigkeit und Temperatur im Innenraum die absolute Luftfreuchtigkeit in Gramm pro Kubikmeter
+    - name: "Absolute Luftfeuchtigkeit Schlafzimmer"
+      unique_id: d7e1346da0c646fb832c2cfc59331f57
+      unit_of_measurement: "g/m³"
+      state: >- 
+          {{ ( 1000*e**(19.016-(4064.95/(float(states('sensor.schlafzimmer_sonoff_temperature'))+236.25)))*100/(461.66*(float(states('sensor.schlafzimmer_sonoff_temperature'))+273.15)) * float(states('sensor.schlafzimmer_sonoff_humidity'))/100 | float) | round (2) }}
+    # Errechnet den Untschied der Luftfeuchte von innen und außen in Gramm pro Kubikmeter
+    - name: "Absolute Luftfeuchtigkeit Unterschied Schlafzimmer"
+      unique_id: 6b177f5aa2844fcc940c3d1bfb83aced
+      unit_of_measurement: "g/m³"
+      state: >-
+          {{ ( float(states('sensor.absolute_luftfeuchtigkeit_schlafzimmer')) - float(states('sensor.absolute_luftfeuchtigkeit_aussen')) ) | float | round (2) }}
+    ######################Schlafzimmer#################################
+
+    ########################Wohnzimmer#################################
+        # Errechnet aus der relativen Luftfeuchtigkeit und Temperatur im Innenraum die absolute Luftfreuchtigkeit in Gramm pro Kubikmeter
+    - name: "Absolute Luftfeuchtigkeit Wohnzimmer"
+      unique_id: 751a14a5a5a64b3da2f5ec4fa862135b
+      unit_of_measurement: "g/m³"
+      state: >- 
+          {{ ( 1000*e**(19.016-(4064.95/(float(states('sensor.wohnzimmer_sonoff_temperature'))+236.25)))*100/(461.66*(float(states('sensor.wohnzimmer_sonoff_temperature'))+273.15)) * float(states('sensor.wohnzimmer_sonoff_humidity'))/100 | float) | round (2) }}
+    # Errechnet den Untschied der Luftfeuchte von innen und außen in Gramm pro Kubikmeter
+    - name: "Absolute Luftfeuchtigkeit Unterschied Wohnzimmer"
+      unique_id: 4d738cf04ef1464fa1188ac6ea5f12c1
+      unit_of_measurement: "g/m³"
+      state: >-
+          {{ ( float(states('sensor.absolute_luftfeuchtigkeit_wohnzimmer')) - float(states('sensor.absolute_luftfeuchtigkeit_aussen')) ) | float | round (2) }}
+    ########################Wohnzimmer#################################
+    
+    ####################Kinderzimmer 1. OG#############################
+    # Errechnet aus der relativen Luftfeuchtigkeit und Temperatur im Innenraum die absolute Luftfreuchtigkeit in Gramm pro Kubikmeter
+    - name: "Absolute Luftfeuchtigkeit Kinderzimmer 1. OG"
+      unique_id: 10f2203582f1488d8198c4d121bdbabf
+      unit_of_measurement: "g/m³"
+      state: >- 
+          {{ ( 1000*e**(19.016-(4064.95/(float(states('sensor.kinderzimmer_1_og_sonoff_temperature'))+236.25)))*100/(461.66*(float(states('sensor.kinderzimmer_1_og_sonoff_temperature'))+273.15)) * float(states('sensor.kinderzimmer_1_og_sonoff_humidity'))/100 | float) | round (2) }}
+    # Errechnet den Untschied der Luftfeuchte von innen und außen in Gramm pro Kubikmeter
+    - name: "Absolute Luftfeuchtigkeit Unterschied Kinderzimmer 1. OG"
+      unique_id: afe4b9359b33428a8c52fbefd173e3f2
+      unit_of_measurement: "g/m³"
+      state: >-
+          {{ ( float(states('sensor.absolute_luftfeuchtigkeit_kinderzimmer_1_og')) - float(states('sensor.absolute_luftfeuchtigkeit_aussen')) ) | float | round (2) }}
+    ####################Kinderzimmer 1. OG#############################
+
+    #########################Bad 1. OG#################################
+    # Errechnet aus der relativen Luftfeuchtigkeit und Temperatur im Innenraum die absolute Luftfreuchtigkeit in Gramm pro Kubikmeter
+    - name: "Absolute Luftfeuchtigkeit Bad 1. OG"
+      unique_id: 763071bbf053414ebd685e34688d0ae0
+      unit_of_measurement: "g/m³"
+      state: >- 
+          {{ ( 1000*e**(19.016-(4064.95/(float(states('sensor.bad_epaper_temperature'))+236.25)))*100/(461.66*(float(states('sensor.bad_epaper_temperature'))+273.15)) * float(states('sensor.bad_epaper_humidity'))/100 | float) | round (2) }}
+    # Errechnet den Untschied der Luftfeuchte von innen und außen in Gramm pro Kubikmeter
+    - name: "Absolute Luftfeuchtigkeit Unterschied Bad 1. OG"
+      unique_id: 69908fab6fcf470f90f218d98405dd92
+      unit_of_measurement: "g/m³"
+      state: >-
+          {{ ( float(states('sensor.absolute_luftfeuchtigkeit_bad_1_og')) - float(states('sensor.absolute_luftfeuchtigkeit_aussen')) ) | float | round (2) }}
+    #########################Bad 1. OG#################################
 
     ###################################################################
     #                                                                 #
-    #           Definition von Sensoren für Stromzähler               #
-    #                          alt                                    #
+    #          Definition von Sensoren für Entfernug                  #
+    #                    von Mobil Geräten                            #
     #                                                                 #
     ###################################################################
-#    #powerfox Templatesensoren
-#      - name: "Strom aktuell"
-#        unit_of_measurement: "W"
-#        device_class: "power"
-#        state_class: "measurement"
-#        state: >
-#            {{ state_attr('sensor.poweropti', 'Watt') }}
-#        unique_id: 0fdb0511c7dd43cb90098237b7c06313
-#        icon: mdi:sine-wave
-#
-#      - name: "Strom Bezug"
-#        unit_of_measurement: "kWh"
-#        device_class: "energy"
-#        state_class: "total_increasing"
-#        state: >
-#            {{ state_attr('sensor.poweropti', 'A_Plus') }}
-#        unique_id: 83ed394e88234fefbe5af93390e4f90c
-#        icon: mdi:transmission-tower-export
-#
-#      - name: "Stromzählerstand Insgesamt"
-#        unit_of_measurement: "kWh"
-#        device_class: "energy"
-#        state_class: "total_increasing"
-#        state: >
-#            {{ state_attr('sensor.poweropti', 'A_Plus') }}
-#        unique_id: a72e8a34647b44a8b89385249143213c
-#
-#      - name: "Stromzählerstand HT"
-#        unit_of_measurement: "kWh"
-#        device_class: "energy"
-#        state_class: "total_increasing"
-#        state: >
-#            {{ state_attr('sensor.poweropti', 'A_Plus_HT') }}
-#        unique_id: c1e2e5f7ab244326823ab26fe8607e94
-#        icon: mdi:meter-electric
-#
-#      - name: "Stromzählerstand NT"
-#        unit_of_measurement: "kWh"
-#        device_class: "energy"
-#        state_class: "total_increasing"
-#        state: >
-#            {{ state_attr('sensor.poweropti', 'A_Plus_NT') }}
-#        unique_id: 1f948e1accf4431896b2f416a2acf5d6
-#        icon: mdi:meter-electric
-#
-#      - name: "PowerOpti Outdated"
-#        state: >
-#            {{ state_attr('sensor.poweropti', 'Outdated') }}
-#        icon: mdi:database-edit
-#        unique_id: 154a40949cb84c1683b32a508377ae59
-#
-#      - name: "Strom Einspeisung"
-#        unit_of_measurement: "kWh"
-#        device_class: "energy"
-#        state_class: "total_increasing"
-#        state: >
-#            {{ state_attr('sensor.poweropti', 'A_Minus') }}
-#        unique_id: c6c5adc8db634eca8ed2a4a5070338ed
-#        icon: mdi:transmission-tower-import
-#
-#- binary_sensor:
-#    - name: "PowerOpti Outdated"
-#      state: >
-#        {% if is_state('sensor.PowerOpti_Outdated', 'False') -%}
-#          off
-#        {%- else -%}
-#          on
-#        {%- endif %}
-#      icon: >
-#        {% if is_state('sensor.PowerOpti_Outdated', 'False') -%}
-#          mdi:toggle-switch-off
-#        {%- else -%}
-#          mdi:toggle-switch
-#        {%- endif %}
-#      unique_id: a4a70a07ee0c49c5b79207f5766aff33
-#
+    - name: "Bella entfernung"
+      unit_of_measurement: km
+      state_class: measurement
+      state: "{{ distance('device_tracker.bellas_iphone_2', 'zone.home')|round(1) }}"
+      unique_id: fa99820c200a4d2ca70108bfd3780754
+
+    - name: "Stefan entfernung"
+      unit_of_measurement: km
+      state_class: measurement
+      state: "{{ distance('device_tracker.iphone_11_pro_max', 'zone.home')|round(1) }}"
+      unique_id: 10effd750b8849abbf46bf368199085a

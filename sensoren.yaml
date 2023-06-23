@@ -75,31 +75,18 @@
     counter_lights:
       friendly_name: Angeschaltene Lichter
       value_template: >-
-        {{ states.light|selectattr('state','equalto','on')|list|length }}
+        {% set reject = [ 'light.mittagspause_joshua', 'light.alle_lichter', 'light.alle_lichter_wohnzimmer', 'light.alle_lichter_kuche'] %}
+        {{ states.light | rejectattr('entity_id', 'in', reject) | selectattr('state','equalto','on')|list|length }}
+        
     counter_doors:
       friendly_name: offene Türen
       value_template: >-
         {{ states.binary_sensor | selectattr('state', 'eq', 'on') | selectattr('attributes.device_class', 'eq', 'door') | list | count | int }}
+
     counter_windows:
       friendly_name: offene Fenster
       value_template: >-
         {{ states.binary_sensor | selectattr('state', 'eq', 'on') | selectattr('attributes.device_class', 'eq', 'window') | list | count | int }}
-
-    #Nuki sensor.nuki_haustur_door_state nach Deutsch
-    nuki_haustuer_door_state:
-      friendly_name: "Haustür zustand"
-      value_template: >-
-        {% if is_state('binary_sensor.nuki_haustur_door_open','on') %}
-          Geöffnet
-        {% else %}
-          Geschlossen
-        {% endif %}
-      icon_template: >-
-        {% if is_state('binary_sensor.nuki_haustur_door_open','on') %}
-          mdi:door-open
-        {% else %}
-          mdi:door-closed
-        {% endif %}
 
     #Briefkasten für Chipkarte anpassen
     briefkasten_status:
@@ -201,6 +188,37 @@
 
     ###################################################################
     #                                                                 #
+    #         Berechnen von Stromkosten für Energie Dashboard         #
+    #                     Hochtarif / Niedertarif                     #
+    #                                                                 #
+    ###################################################################
+
+    strompreis_fuer_dashboard_hochtarif:
+      friendly_name: "Strompreis für Energie Dashboard Hochtarif"
+      value_template: >
+       {% if now().month in [1,2,3,4,5,6] %}
+          {{ states('input_number.stromkosten_hochtarif_januar_juni') }}
+        {% else %}
+          {{ states('input_number.stromkosten_hochtarif_juli_dezember') }}
+        {% endif %}
+      unit_of_measurement: '€/kWh'
+      icon_template: mdi:currency-eur
+      unique_id: d5be0186186f4b4abe28df7dec9f7861
+    
+    strompreis_fuer_dashboard_niedertarif:
+      friendly_name: "Strompreis für Energie Dashboard Niedertarif"
+      value_template: >
+       {% if now().month in [1,2,3,4,5,6] %}
+          {{ states('input_number.stromkosten_niedertarif_januar_juni') }}
+        {% else %}
+          {{ states('input_number.stromkosten_niedertarif_juli_dezember') }}
+        {% endif %}
+      unit_of_measurement: '€/kWh'
+      icon_template: mdi:currency-eur
+      unique_id: 4e02812021fc49e7b8e98b583030ff96
+
+    ###################################################################
+    #                                                                 #
     #          Berechnen von Stromkosten täglich HT / NT              #
     #                                                                 #
     ###################################################################
@@ -242,6 +260,50 @@
       unit_of_measurement: EUR
       icon_template: mdi:currency-eur
       unique_id: ec53a06e8df24e8cba061b914f1c7e96
+
+    #######################################################################
+    #                                                                     #
+    #          Berechnen von Stromkosten wöchentlich HT / NT              #
+    #                                                                     #
+    #######################################################################
+    stromkosten_woechentlich_ht:
+      friendly_name: >-
+        {% if now().month in [1,2,3,4,5,6] %}
+          Kosten für Hochtarif wöchentlich Sommer
+        {% else %}
+          Kosten für Hochtarif wöchentlich Winter
+        {% endif %}
+      value_template: >-
+        {% if now().month in [1,2,3,4,5,6] %}
+          {{ (states('sensor.strom_wochentlich_hochtarif') | float * states('input_number.stromkosten_hochtarif_januar_juni') | float ) | round(2)}}
+        {% else %}
+          {{ (states('sensor.strom_wochentlich_hochtarif') | float * states('input_number.stromkosten_hochtarif_juli_dezember') | float ) | round(2)}}
+        {% endif %}
+      #value_template: >
+      #  {{ states('sensor.stromverbrauch_hochtarif') | float * states('input_number.stromkosten_hochtarif_juli_dezember') | float | round(2)}}
+      unit_of_measurement: EUR
+      icon_template: mdi:currency-eur
+      unique_id: 5bc03260821a438985a5095f5a76f0f8
+
+    #Berechnung der Stomkosten in €/kWh für Niedertarif
+    stromkosten_woechentlich_nt:
+      friendly_name: >-
+        {% if now().month in [1,2,3,4,5,6] %}
+          Kosten für Niedertarif wöchentlich Sommer
+        {% else %}
+          Kosten für Niedertarif wöchentlich Winter
+        {% endif %}
+      value_template: >-
+        {% if now().month in [1,2,3,4,5,6] %}
+          {{ (states('sensor.strom_wochentlich_niedertarif') | float * states('input_number.stromkosten_niedertarif_januar_juni') | float ) | round(2) }}
+        {% else %}
+          {{ (states('sensor.strom_wochentlich_niedertarif') | float * states('input_number.stromkosten_niedertarif_juli_dezember') | float ) | round(2) }}
+        {% endif %}
+      #value_template: >
+      #  {{ states('sensor.stromverbrauch_niedertarif') | float * states('input_number.stromkosten_niedertarif_juli_dezember') | round(2) }}
+      unit_of_measurement: EUR
+      icon_template: mdi:currency-eur
+      unique_id: 1de2303d67494546964495db617cc317
 
     ###################################################################
     #                                                                 #
@@ -307,6 +369,14 @@
       icon_template: mdi:transmission-tower-export
       unique_id: 2c97c5bf20584361b775999d5ed7c90d
 
+    stromverbrauch_woechentlich:
+      friendly_name: "Wöchentlicher Stromverbrauch gesamt"
+      value_template: >-
+        {{ (states('sensor.strom_wochentlich_hochtarif') | float + states('sensor.strom_wochentlich_niedertarif') | float)  | round(2) }}
+      unit_of_measurement: kWh
+      icon_template: mdi:transmission-tower-export
+      unique_id: 8e06a4aafdd74e8587419ee13ec0e472
+
     stromverbrauch_taeglich:
       friendly_name: "Täglicher Stromverbrauch gesamt"
       value_template: >-
@@ -314,6 +384,67 @@
       unit_of_measurement: kWh
       icon_template: mdi:transmission-tower-export
       unique_id: e1ae21e4fcf643dbaa5b71180f39d69d
+
+    ###################################################################
+    #                                                                 #
+    #            Berechnen von Stromverbrauch Geräte                  #
+    #                                                                 #
+    ###################################################################
+    homelab_stromverbrauch_jaehrlich_gesamt:
+      friendly_name: "Homelab Stromverbrauch jährlich gesamt"
+      value_template: >-
+        {{ (states('sensor.homelab_stromverbrauch_jahrlich_hochtarif') | float + states('sensor.homelab_stromverbrauch_jahrlich_niedertarif') | float)  | round(2) }}
+      unit_of_measurement: kWh
+      icon_template: mdi:transmission-tower-export
+
+    homelab_stromverbrauch_monatlich_gesamt:
+      friendly_name: "Homelab Stromverbrauch wöchentlich gesamt"
+      value_template: >-
+        {{ (states('sensor.homelab_stromverbrauch_monatlich_hochtarif') | float + states('sensor.homelab_stromverbrauch_monatlich_niedertarif') | float)  | round(2) }}
+      unit_of_measurement: kWh
+      icon_template: mdi:transmission-tower-export
+
+    homelab_stromverbrauch_woechentlich_gesamt:
+      friendly_name: "Homelab Stromverbrauch wöchentlich gesamt"
+      value_template: >-
+        {{ (states('sensor.homelab_stromverbrauch_wochentlich_hochtarif') | float + states('sensor.homelab_stromverbrauch_wochentlich_niedertarif') | float)  | round(2) }}
+      unit_of_measurement: kWh
+      icon_template: mdi:transmission-tower-export
+
+    homelab_stromverbrauch_taeglich_gesamt:
+      friendly_name: "Homelab Stromverbrauch täglich gesamt"
+      value_template: >-
+        {{ (states('sensor.homelab_stromverbrauch_taglich_hochtarif') | float + states('sensor.homelab_stromverbrauch_taglich_niedertarif') | float)  | round(2) }}
+      unit_of_measurement: kWh
+      icon_template: mdi:transmission-tower-export
+
+    heizung_buero_eg_stromverbrauch_jaehrlich_gesamt:
+      friendly_name: "Heizung Büro EG Stromverbrauch jährlich gesamt"
+      value_template: >-
+        {{ (states('sensor.heizung_buro_eg_jahrlich_hochtarif') | float + states('sensor.heizung_buro_eg_jahrlich_niedertarif') | float)  | round(2) }}
+      unit_of_measurement: kWh
+      icon_template: mdi:transmission-tower-export
+
+    heizung_buero_eg_stromverbrauch_monatlich_gesamt:
+      friendly_name: "Heizung Büro EG Stromverbrauch wöchentlich gesamt"
+      value_template: >-
+        {{ (states('sensor.heizung_buro_eg_monatlich_hochtarif') | float + states('sensor.heizung_buro_eg_monatlich_niedertarif') | float)  | round(2) }}
+      unit_of_measurement: kWh
+      icon_template: mdi:transmission-tower-export
+
+    heizung_buero_eg_stromverbrauch_woechentlich_gesamt:
+      friendly_name: "Heizung Büro EG Stromverbrauch wöchentlich gesamt"
+      value_template: >-
+        {{ (states('sensor.heizung_buro_eg_wochentlich_hochtarif') | float + states('sensor.heizung_buro_eg_wochentlich_niedertarif') | float)  | round(2) }}
+      unit_of_measurement: kWh
+      icon_template: mdi:transmission-tower-export
+
+    heizung_buero_eg_stromverbrauch_taeglich_gesamt:
+      friendly_name: "Heizung Büro EG Stromverbrauch täglich gesamt"
+      value_template: >-
+        {{ (states('sensor.heizung_buro_eg_taglich_hochtarif') | float + states('sensor.heizung_buro_eg_taglich_niedertarif') | float)  | round(2) }}
+      unit_of_measurement: kWh
+      icon_template: mdi:transmission-tower-export
 
     ###################################################################
     #                                                                 #
@@ -325,7 +456,7 @@
       friendly_name: "Jährliche Stromkosten gesamt"
       value_template: >-
         {{ (states('sensor.stromkosten_jaehrlich_ht') | float + states('sensor.stromkosten_jaehrlich_nt') | float) | round(2) }}
-      unit_of_measurement: €/Monat
+      unit_of_measurement: €/Jahr
       icon_template: mdi:currency-eur
       unique_id: cf5c5bcd67664c70b28317fb11d0637f
 
@@ -337,10 +468,101 @@
       icon_template: mdi:currency-eur
       unique_id: 6d2c8b3079f041f7876e877d1c54650b
 
+    stromkosten_woechentlich:
+      friendly_name: "Wöchentliche Stromkosten gesamt"
+      value_template: >-
+        {{ (states('sensor.stromkosten_woechentlich_ht') | float + states('sensor.stromkosten_woechentlich_nt') | float) | round(2) }}
+      unit_of_measurement: €/Woche
+      icon_template: mdi:currency-eur
+      unique_id: e1938fe622a64dddaba66ce9e602f018
+
     stromkosten_taeglich:
       friendly_name: "Täglicher Stromkosten gesamt"
       value_template: >-
         {{ (states('sensor.stromkosten_taeglich_ht') | float + states('sensor.stromkosten_taeglich_nt') | float) | round(2) }}
       unit_of_measurement: €/Tag
       icon_template: mdi:currency-eur
-      unique_id: e1938fe622a64dddaba66ce9e602f018
+      unique_id: f109432e0b1a470e9c16e2dc9c9ce662
+
+    ###################################################################
+    #                                                                 #
+    #            E-Ink Display Badezimmer mit HT                      #
+    #                                                                 #
+    ###################################################################
+
+    epaper_weather_actual:
+    #weahtericon;temperature;humidity,wind_speed
+      value_template: "{{states('weather.zuhause')}};{{state_attr('weather.zuhause', 'temperature') | replace('.',',') }};{{state_attr('weather.zuhause', 'humidity') | replace('.',',') }};{{state_attr('weather.zuhause', 'wind_speed') | replace('.',',') }}"
+    epaper_weather_forecast:
+        value_template: "{{as_timestamp(state_attr('weather.zuhause', 'forecast')[0]['datetime'], '%Y-%m-%dT%H:%M') | timestamp_custom('%a') }};{{state_attr('weather.zuhause', 'forecast')[0]['condition']}};{{state_attr('weather.zuhause', 'forecast')[0]['temperature']| replace('.',',') }};{{state_attr('weather.zuhause', 'forecast')[0]['templow']| replace('.',',') }};{{as_timestamp(state_attr('weather.zuhause', 'forecast')[1]['datetime'], '%Y-%m-%dT%H:%M') | timestamp_custom('%a') }};{{state_attr('weather.zuhause', 'forecast')[1]['condition']}};{{state_attr('weather.zuhause', 'forecast')[1]['temperature']| replace('.',',') }};{{state_attr('weather.zuhause', 'forecast')[1]['templow']| replace('.',',') }};{{as_timestamp(state_attr('weather.zuhause', 'forecast')[2]['datetime'], '%Y-%m-%dT%H:%M') | timestamp_custom('%a') }};{{state_attr('weather.zuhause', 'forecast')[2]['condition']}};{{state_attr('weather.zuhause', 'forecast')[2]['temperature']| replace('.',',') }};{{state_attr('weather.zuhause', 'forecast')[2]['templow']| replace('.',',') }};{{as_timestamp(state_attr('weather.zuhause', 'forecast')[3]['datetime'], '%Y-%m-%dT%H:%M') | timestamp_custom('%a') }};{{state_attr('weather.zuhause', 'forecast')[3]['condition']}};{{state_attr('weather.zuhause', 'forecast')[3]['temperature']| replace('.',',') }};{{state_attr('weather.zuhause', 'forecast')[3]['templow']| replace('.',',') }};{{as_timestamp(state_attr('weather.zuhause', 'forecast')[4]['datetime'], '%Y-%m-%dT%H:%M') | timestamp_custom('%a') }};{{state_attr('weather.zuhause', 'forecast')[4]['condition']}};{{state_attr('weather.zuhause', 'forecast')[4]['temperature']| replace('.',',') }};{{state_attr('weather.zuhause', 'forecast')[4]['templow']| replace('.',',') }}"
+    epaper_sunrise:
+      value_template: "{{ as_timestamp(state_attr('sun.sun', 'next_dawn'), '%Y-%m-%dT%H:%M') | timestamp_custom('%H:%M') }}"
+    epaper_sunset:
+      value_template: "{{ as_timestamp(state_attr('sun.sun', 'next_dusk'), '%Y-%m-%dT%H:%M')  | timestamp_custom('%H:%M') }}"
+    epaper_humidity_outside:
+      value_template: "{{ states('sensor.garten_humidity')}}"
+    epaper_temperatur_outside:
+      value_template: "{{ states('sensor.garten_temperature')}}"
+    
+    niedertarif_korrekter_wert_taeglich:
+      friendly_name: "Korrekter Wert täglich Niedertarif"
+      value_template: >-
+        {{ (states('sensor.strom_taglich_niedertarif') | float - (states('input_number.niedertarif_alter_falscher_wert') | float - states('input_number.niedertarif_alter_wert') | float))|round(2)}}
+
+    niedertarif_korrekter_wert_woechentlich:
+      friendly_name: "Korrekter Wert wöchentlich Niedertarif"
+      value_template: >-
+        {{ (states('sensor.strom_wochentlich_niedertarif') | float - (states('input_number.niedertarif_alter_falscher_wert') | float - states('input_number.niedertarif_alter_wert') | float))|round(2)}}
+
+    niedertarif_korrekter_wert_monatlich:
+      friendly_name: "Korrekter Wert Monatlich Niedertarif"
+      value_template: >-
+        {{ (states('sensor.stromverbrauch_niedertarif') | float - (states('input_number.niedertarif_alter_falscher_wert') | float - states('input_number.niedertarif_alter_wert') | float))|round(2)}}
+
+    niedertarif_korrekter_wert_jaehrlich:
+      friendly_name: "Korrekter Wert jährlich Niedertarif"
+      value_template: >-
+        {{ (states('sensor.strom_jahrlich_niedertarif') | float - (states('input_number.niedertarif_alter_falscher_wert') | float - states('input_number.niedertarif_alter_wert') | float))|round(2)}}
+
+    hochtarif_korrekter_wert_taeglich:
+      friendly_name: "Korrekter Wert täglich hochtarif"
+      value_template: >-
+        {{ (states('sensor.strom_taglich_hochtarif') | float - (states('input_number.hochtarif_alter_falscher_wert') | float - states('input_number.hochtarif_alter_wert') | float))|round(2)}}
+
+    hochtarif_korrekter_wert_woechentlich:
+      friendly_name: "Korrekter Wert wöchentlich hochtarif"
+      value_template: >-
+        {{ (states('sensor.strom_wochentlich_hochtarif') | float - (states('input_number.hochtarif_alter_falscher_wert') | float - states('input_number.hochtarif_alter_wert') | float))|round(2)}}
+
+    hochtarif_korrekter_wert_monatlich:
+      friendly_name: "Korrekter Wert Monatlich hochtarif"
+      value_template: >-
+        {{ (states('sensor.stromverbrauch_hochtarif') | float - (states('input_number.hochtarif_alter_falscher_wert') | float - states('input_number.hochtarif_alter_wert') | float))|round(2)}}
+
+    hochtarif_korrekter_wert_jaehrlich:
+      friendly_name: "Korrekter Wert jährlich hochtarif"
+      value_template: >-
+        {{ (states('sensor.strom_jahrlich_hochtarif') | float - (states('input_number.hochtarif_alter_falscher_wert') | float - states('input_number.hochtarif_alter_wert') | float))|round(2)}}
+
+
+- platform: mqtt_room
+  device_id: "apple:1005:9-8"
+  name: 'Apple Watch Stefan (ESPresense)'
+  state_topic: 'espresense/rooms'
+  timeout: 10
+  away_timeout: 120
+- platform: mqtt_room
+  device_id: "irk:26856d002cc9e7278fe241ed4d28cd6c"
+  name: 'Apple iPhone Stefan (ESPresense)'
+  state_topic: 'espresense/rooms'
+  timeout: 10
+  away_timeout: 120
+- platform: mqtt_room
+  device_id: "5a008e98ad37"
+  name: 'Apple Watch Bella (ESPresense)'
+  state_topic: 'espresense/rooms'
+  timeout: 10
+  away_timeout: 120
+
+
+  

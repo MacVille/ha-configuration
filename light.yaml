@@ -10,3 +10,13 @@
 - platform: switch
   name: Mittagspause Joshua
   entity_id: switch.mittagspause_joshi
+- platform: template
+  lights:
+    weihnachtsbaum_kerzen:
+      friendly_name: "Weihnachtsbaumkerzen"
+      turn_on:
+        service: script.weihnachtsbaum_kerzen_an
+      turn_off:
+        service: script.weihnachtsbaum_kerzen_aus
+      icon_template: mdi:candle
+      unique_id: 1ae016b2bdcc4b488c1f4bbbd03432d4

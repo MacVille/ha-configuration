@@ -1,9 +1,9 @@
 sources:
   - name: abfall_io
     args:
-      key: API-KEY
-      f_id_kommune: KOMMUNE
-      f_id_strasse: STRASSE
+      key: 5b0384147b5bc055c30fee1fb6db6f76
+      f_id_kommune: 277
+      f_id_strasse: 15732
       f_abfallarten:
         - 51
         - 17

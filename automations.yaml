@@ -1,47 +1,13 @@
-- id: '1645918399446'
-  alias: Waschmaschine zuende
-  description: 'Aktuell auf 3D Drucker eingestellt. Muss noch umgestellt werden '
-  trigger:
-  - platform: numeric_state
-    entity_id: sensor.waschmaschine_current_energy
-    below: '5'
-    for:
-      hours: 0
-      minutes: 5
-      seconds: 0
-  condition:
-  - condition: state
-    entity_id: input_boolean.waschmaschine_lauft
-    state: 'on'
-  action:
-  - service: counter.increment
-    data: {}
-    target:
-      entity_id: counter.waschzyklen
-  - service: input_boolean.turn_off
-    data: {}
-    target:
-      entity_id: input_boolean.waschmaschine_lauft
-  - service: notify.familie
-    data:
-      message: Die Waschmaschine ist fertig! Hol die Wäsche raus
-      title: Waschmaschine
-  - type: turn_off
-    device_id: d8fbe6ea6daa3c2efa0cb6c1a44d9d56
-    entity_id: switch.waschmaschine
-    domain: switch
-    enabled: true
-  mode: single
 - id: '1645918643707'
   alias: Trockner zuende
   description: Aktuell auf 3D Drucker eingestellt. Muss noch umgestellt werden.
   trigger:
   - platform: numeric_state
-    entity_id: sensor.trockner_current_energy
-    below: '5'
+    entity_id: sensor.trockner_current_power
+    below: 5
     for:
       hours: 0
-      minutes: 5
+      minutes: 10
       seconds: 0
   condition:
   - condition: state
@@ -64,39 +30,50 @@
     device_id: 2e7d9ead882f03a163b024d6043104b7
     entity_id: switch.trockner
     domain: switch
-    enabled: true
-  mode: single
-- id: '1645919624925'
-  alias: Waschmaschine startet
-  description: ''
-  trigger:
-  - platform: numeric_state
-    entity_id: sensor.waschmaschine_current_energy
-    above: '5'
-    for:
-      hours: 0
-      minutes: 5
-      seconds: 0
-  condition:
-  - condition: state
-    entity_id: input_boolean.waschmaschine_lauft
-    state: 'off'
-  action:
-  - service: notify.familie
-    data:
-      message: Die Waschmaschine wurde eingeschaltet.
-      title: Waschmaschine
-  - service: input_boolean.turn_on
+    enabled: false
+  - service: switch.turn_off
     data: {}
     target:
-      entity_id: input_boolean.waschmaschine_lauft
+      entity_id: switch.trockner
+  - service: input_datetime.set_datetime
+    data_template:
+      datetime: '{{ now().strftime(''%Y-%m-%d %H:%M:%S'')}}'
+    target:
+      entity_id: input_datetime.trockner_endzeit
+  - service: input_datetime.set_datetime
+    data_template:
+      datetime: '{{(((state_attr(''input_datetime.trockner_endzeit'' , ''timestamp''))
+        - 600) | timestamp_custom(''%Y-%m-%d %H:%M'', true))}}'
+    target:
+      entity_id: input_datetime.trockner_endzeit
+    alias: Setze Trockner Endzeit -10 Minuten
+  - service: notify.file_export_trockner_verlauf_strom
+    data:
+      message: '{{ now().strftime(''%d.%m.%Y'') }};{{states.input_datetime.trockner_startzeit.state
+        }};{{states.input_datetime.trockner_endzeit.state }};{{states.sensor.verbrauchszahler_trockner.state
+        | replace(".",",")}};'
+      title: Timestamp;Startzeit;Endzeit;kWh Verbraucht;
+  - service: google_sheets.append_sheet
+    data:
+      config_entry: a06f7a900a95db5053d1b3b52778151e
+      worksheet: Trockner
+      data:
+        created: '{{ now().strftime(''%d.%m.%Y'') }}'
+        Startzeit: '{{states.input_datetime.trockner_startzeit.state}}'
+        Endzeit: '{{states.input_datetime.trockner_endzeit.state}}'
+        kWh Verbraucht: '{{states.sensor.verbrauchszahler_trockner.state}}'
+  - service: utility_meter.calibrate
+    data:
+      value: '0'
+    target:
+      entity_id: sensor.verbrauchszahler_trockner
   mode: single
 - id: '1645919733605'
   alias: Trockner startet
   description: ''
   trigger:
   - platform: numeric_state
-    entity_id: sensor.trockner_current_energy
+    entity_id: sensor.trockner_current_power
     above: '5'
     for:
       hours: 0
@@ -115,6 +92,18 @@
     data: {}
     target:
       entity_id: input_boolean.trockner_lauft
+  - service: input_datetime.set_datetime
+    data_template:
+      datetime: '{{ now().strftime(''%Y-%m-%d %H:%M:%S'')}}'
+    target:
+      entity_id: input_datetime.trockner_startzeit
+  - service: input_datetime.set_datetime
+    data_template:
+      datetime: '{{(((state_attr(''input_datetime.trockner_startzeit'' , ''timestamp''))
+        - 300) | timestamp_custom(''%Y-%m-%d %H:%M'', true))}}'
+    target:
+      entity_id: input_datetime.trockner_startzeit
+    alias: Setze Trockner Startzeit -5 Minuten
   mode: single
 - id: '1650755768216'
   alias: Low battery level detection & notification for all battery sensors
@@ -171,70 +160,6 @@
       message: Drucker wurde angeschalten
       title: Hat geklappt
   mode: single
-- id: '1655198896618'
-  alias: Einkaufsliste Bella
-  description: ''
-  trigger:
-  - platform: zone
-    entity_id: person.bella
-    zone: zone.dm
-    event: enter
-  - platform: zone
-    entity_id: person.bella
-    zone: zone.f_x_ruch
-    event: enter
-  - platform: zone
-    entity_id: person.bella
-    zone: zone.penny
-    event: enter
-  - platform: zone
-    entity_id: person.bella
-    zone: zone.rewe
-    event: enter
-  condition: []
-  action:
-  - service: notify.mobile_app_bellas_iphone
-    data:
-      data:
-        actions:
-        - action: URI
-          title: Öffne Einkaufsliste
-          uri: /shopping-list
-      title: "\U0001F6CD Einkaufsliste \U0001F6CD"
-      message: Hier geht es zur Einkaufsliste (Nach unten ziehen)
-  mode: single
-- id: '1655407491585'
-  alias: Einkaufsliste Stefan
-  description: ''
-  trigger:
-  - platform: zone
-    entity_id: person.stefan
-    zone: zone.dm
-    event: enter
-  - platform: zone
-    entity_id: person.stefan
-    zone: zone.f_x_ruch
-    event: enter
-  - platform: zone
-    entity_id: person.stefan
-    zone: zone.penny
-    event: enter
-  - platform: zone
-    entity_id: person.stefan
-    zone: zone.rewe
-    event: enter
-  condition: []
-  action:
-  - service: notify.mobile_app_iphone_11_pro_max
-    data:
-      message: Zur Einkaufsliste
-      title: "\U0001F6CD Einkaufsliste \U0001F6CD "
-      data:
-        actions:
-        - action: URI
-          title: Öffne Einkaufsliste
-          uri: /shopping-list
-  mode: single
 - id: '1659510663466'
   alias: '[Benachrichtigung] Türen/Fenster offen'
   description: ''
@@ -276,7 +201,7 @@
   trigger:
   - platform: state
     entity_id:
-    - input_boolean.briefkasten
+    - binary_sensor.briefkasten_contact
     to: 'on'
     id: post_ist_da
   - platform: event
@@ -315,30 +240,17 @@
       message: Briefkasten wurde geleert
       title: Die Post ist leer!
   mode: single
-- id: '1660343731967'
-  alias: '[NFC] Trigger für Briefkasten zurücksetzen'
-  description: ''
-  trigger:
-  - platform: tag
-    tag_id: 929a838c-f3c8-452d-a384-7b034174ca52
-  condition: []
-  action:
-  - service: input_boolean.turn_off
-    data: {}
-    target:
-      entity_id: input_boolean.briefkasten
-  mode: single
 - id: '1660854346405'
   alias: '[Benachrichtigung - Crit] Haustür geöffnet obwohl verriegelt'
   description: ''
   trigger:
   - platform: state
     entity_id:
-    - lock.nuki_haustur_lock
+    - lock.haustur
     to: locked
   condition:
   - condition: state
-    entity_id: binary_sensor.nuki_haustur_door_open
+    entity_id: binary_sensor.haustur_door_sensor
     state: 'On'
   action:
   - service: notify.familie
@@ -371,6 +283,10 @@
       - select.stromverbrauch
       - select.strom_taglich
       - select.strom_jahrlich
+      - select.strom_wochentlich
+    enabled: false
+  - service: script.actions_setzen_hochtarif
+    data: {}
   mode: single
 - id: '1661926251948'
   alias: '[Strom] Niedertarif'
@@ -391,6 +307,10 @@
       - select.stromverbrauch
       - select.strom_taglich
       - select.strom_jahrlich
+      - select.strom_wochentlich
+    enabled: false
+  - service: script.neues_skript
+    data: {}
   mode: single
 - id: '1661926295534'
   alias: '[Strom] Niedertarif Wochenende/Feiertag'
@@ -409,6 +329,11 @@
       entity_id:
       - select.stromverbrauch
       - select.strom_taglich
+      - select.strom_jahrlich
+      - select.strom_wochentlich
+    enabled: false
+  - service: script.neues_skript
+    data: {}
   mode: single
 - id: '1662122005044'
   alias: '[Benachrichtigung E-Mail] Stromzähler und Wasseruhr'
@@ -443,12 +368,17 @@
   - service: lock.lock
     data: {}
     target:
-      entity_id: lock.nuki_haustur_lock
+      entity_id: lock.haustur
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 10
+      milliseconds: 0
   - service: notify.familie
     data:
       title: 'SmartHome-Muehlsky: Tür wurde abgeschlossen'
-      message: "Die Haustür wurde: {% if is_state('binary_sensor.nuki_haustur_locked',
-        'on') %}Abgeschlossen \U0001F512{% endif %}"
+      message: "Die Haustür wurde: {% if is_state('lock.haustur', 'locked') %}Abgeschlossen
+        \U0001F512 {% endif %}"
   - service: input_boolean.turn_on
     data: {}
     target:
@@ -466,11 +396,11 @@
   action:
   - service: notify.File_Export_Stromdaten_woechentlich
     data_template:
-      message: '{{ now().strftime(''%d.%m.%Y'') }}; {{ states.sensor.strom_bezug.state
-        | round(0)  | replace(".", ",")}}; {{ states.sensor.stromzahlerstand_ht.state
-        | round(0) | replace(".", ",")}}; {{ states.sensor.stromverbrauch_hochtarif.state
-        | round(0) | replace(".",",")}}; {{ states.sensor.stromzahlerstand_nt.state
-        | round(0) | replace(".",",")}}; {{ states.sensor.stromverbrauch_niedertarif.state
+      message: '{{ now().strftime(''%d.%m.%Y'') }};{{ states.sensor.strom_bezug.state
+        | round(0)  | replace(".", ",")}};{{ states.sensor.stromzahlerstand_ht.state
+        | round(0) | replace(".", ",")}};{{ states.sensor.strom_wochentlich_hochtarif.state
+        | round(0) | replace(".",",")}};{{ states.sensor.stromzahlerstand_nt.state
+        | round(0) | replace(".",",")}};{{ states.sensor.strom_wochentlich_niedertarif.state
         | round(0) | replace(".", ",")}};'
       title: Timestamp;Gesamter Zaehlerstand;Zaehlerstand Hochtarif;kWH verbrauch
         Hochtarif; Zaehlerstand Niedertarif;kWh verbrauch Niedertarif;
@@ -483,9 +413,9 @@
         Gesamter Zaehlerstand: '{{states.sensor.strom_bezug.state | round(0) }}'
         Zaehlerstand Hochtarif: '{{states.sensor.stromzahlerstand_ht.state | round(0)}}'
         Zaehlerstand Niedertarif: '{{states.sensor.stromzahlerstand_nt.state | round(0)}}'
-        kWH verbrauch Hochtarif: '{{states.sensor.stromverbrauch_hochtarif.state |
+        kWH verbrauch Hochtarif: '{{states.sensor.strom_wochentlich_hochtarif.state  |
           round(0)}}'
-        kWh verbrauch Niedertarif: '{{states.sensor.stromverbrauch_niedertarif.state
+        kWh verbrauch Niedertarif: '{{states.sensor.strom_wochentlich_niedertarif.state
           | round(0)}}'
   mode: single
 - id: '1664745963978'
@@ -534,16 +464,17 @@
     entity_id:
     - schedule.nuki_aufschliessen
     to: 'on'
+    from: 'off'
   condition:
-  - condition: time
-    after: 05:30:00
-    before: 07:31:00
-    enabled: false
+  - condition: state
+    entity_id: input_boolean.urlaub
+    state: 'off'
+    alias: Wenn Urlaub an, nicht laufen
   action:
   - service: lock.unlock
     data: {}
     target:
-      entity_id: lock.nuki_haustur_lock
+      entity_id: lock.haustur
   - delay:
       hours: 0
       minutes: 0
@@ -626,12 +557,12 @@
   action:
   - service: notify.File_Export_Stromdaten_taeglich
     data_template:
-      message: '{{ now().strftime(''%d.%m.%Y'')}}; {{states.sensor.stromkosten_taeglich_ht.state
-        | replace(".",",")}}; {{states.sensor.stromkosten_taeglich_nt.state | replace(".",",")}};
-        {{states.sensor.strom_taglich_hochtarif.state | replace(".",",")}}; {{states.sensor.strom_taglich_niedertarif.state
-        | replace(".", ",")}}'
+      message: '{{ now().strftime(''%d.%m.%Y'')}};{{states.sensor.stromkosten_taeglich_ht.state
+        | replace(".",",")}};{{states.sensor.stromkosten_taeglich_nt.state | replace(".",",")}};{{states.sensor.strom_taglich_hochtarif.state
+        | replace(".",",")}};{{states.sensor.strom_taglich_niedertarif.state | replace(".",
+        ",")}}'
       title: Timestamp;Stromkosten täglich Hochtarif;Stromkosten täglich Niedertarif;kWh
-        Hochtarif; kWh Niedertarif
+        Hochtarif; kWh Niedertarif;
   - service: google_sheets.append_sheet
     data:
       config_entry: a06f7a900a95db5053d1b3b52778151e
@@ -713,7 +644,7 @@
   - service: lock.lock
     data: {}
     target:
-      entity_id: lock.nuki_haustur_lock
+      entity_id: lock.haustur
   - delay:
       hours: 0
       minutes: 0
@@ -724,120 +655,6 @@
       title: "\U0001F6AA Haustür \U0001F6AA"
       message: Die Haustür wurde {{states('binary_sensor.nuki_haustur_locked')}}
     enabled: true
-  mode: single
-- id: '1668185961607'
-  alias: Test Rewe
-  description: ''
-  trigger:
-  - platform: state
-    entity_id:
-    - binary_sensor.workday_sensor
-    from: 'on'
-    to: 'off'
-  condition:
-  - condition: time
-    after: '10:00:00'
-    before: '11:00:00'
-  action:
-  - service: notify.mobile_app_iphone_11_pro_max
-    data:
-      title: Test
-      message: 'Neues Angebot im Rewe Prospekt für {%- set product_list_loop =  state_attr(''sensor.rewe_865799'',
-        ''discounts'') -%} {%- for product in product_list_loop -%} {% if ''Spezi''
-        in product.product or ''Hell'' in product.product or ''Käse'' in product.product
-        %}
-
-        - {{product.product }} Preis: {{product.price.price }} € Bild: {{ product.picture_link
-        }} {%- endif -%} {%- endfor -%}'
-  mode: single
-- id: '1668810626232'
-  alias: '[Heizen] - Büro Heizen'
-  description: ''
-  trigger:
-  - platform: numeric_state
-    entity_id: sensor.thermometer_hygrometer_temperature
-    below: 18
-    id: heizen
-    enabled: false
-    above: 13
-  - type: temperature
-    platform: device
-    device_id: 8895d7a340d5cca46a337393906158a9
-    entity_id: sensor.thermometer_hygrometer_temperature
-    domain: sensor
-    above: 0
-    below: 18
-    id: heizen
-  - platform: numeric_state
-    entity_id: sensor.temperatur_buro
-    id: geheizt
-    above: 20
-  condition:
-  - condition: numeric_state
-    entity_id: sensor.computer_current_energy
-    above: 85
-    enabled: true
-  action:
-  - choose:
-    - conditions:
-      - condition: trigger
-        id: heizen
-      sequence:
-      - service: climate.turn_on
-        data: {}
-        target:
-          entity_id: climate.wonderwall_smart_2
-      - delay:
-          hours: 0
-          minutes: 0
-          seconds: 10
-          milliseconds: 0
-      - service: climate.set_temperature
-        data:
-          temperature: 20
-          hvac_mode: heat
-        target:
-          entity_id: climate.wonderwall_smart_2
-    - conditions:
-      - condition: trigger
-        id: geheizt
-      sequence:
-      - service: climate.set_temperature
-        data:
-          hvac_mode: 'off'
-          temperature: 0
-        target:
-          entity_id: climate.wonderwall_smart_2
-      - delay:
-          hours: 0
-          minutes: 0
-          seconds: 10
-          milliseconds: 0
-      - service: climate.turn_off
-        data: {}
-        target:
-          entity_id: climate.wonderwall_smart_2
-        enabled: true
-  mode: single
-- id: '1668863522655'
-  alias: '[Heizen] Test'
-  description: ''
-  trigger:
-  - platform: numeric_state
-    entity_id: sensor.temperatur_buro
-    below: 18
-  condition: []
-  action:
-  - service: climate.turn_on
-    data: {}
-    target:
-      entity_id: climate.wonderwall_smart_2
-  - service: climate.set_temperature
-    data:
-      temperature: 20
-      hvac_mode: heat
-    target:
-      entity_id: climate.wonderwall_smart_2
   mode: single
 - id: '1669375669960'
   alias: '[Heizen] Bad EG Heizen wenn Papa da'
@@ -857,6 +674,10 @@
   - condition: state
     entity_id: input_select.papa
     state: Da
+  - condition: state
+    entity_id: input_boolean.urlaub
+    state: 'off'
+    alias: Wenn Urlaub an, nicht laufen
   action:
   - choose:
     - conditions:
@@ -901,6 +722,10 @@
     - condition: state
       entity_id: sensor.time_of_day
       state: Nacht
+  - condition: state
+    entity_id: input_boolean.urlaub
+    state: 'off'
+    alias: Wenn Urlaub an, nicht laufen
   action:
   - choose:
     - conditions:
@@ -956,26 +781,64 @@
         Zählerstand Niedertarif: '{{states.sensor.stromzahlerstand_nt.state | round(0)}}'
   mode: single
 - id: '1670974587026'
-  alias: TEST Büro Heizen
+  alias: '[Heizen] Büro Heizen'
   description: ''
   trigger:
   - platform: state
     entity_id:
-    - schedule.test_heizung_buro
+    - schedule.heizung_buro
     to: 'on'
     id: heizen
   - platform: state
     entity_id:
-    - schedule.test_heizung_buro
+    - schedule.heizung_buro
     to: 'off'
     id: geheitz
-  condition: []
+  condition:
+  - condition: state
+    entity_id: calendar.arbeit
+    state: 'off'
+  - condition: state
+    entity_id: input_boolean.urlaub
+    state: 'off'
+    alias: Wenn Urlaub an, nicht laufen
+  - condition: state
+    entity_id: binary_sensor.fensterkontakt_buro_eg_contact
+    state: 'off'
   action:
   - choose:
     - conditions:
       - condition: trigger
         id: heizen
       sequence:
+      - service: switch.turn_off
+        data: {}
+        target:
+          entity_id: switch.heizung
+      - delay:
+          hours: 0
+          minutes: 0
+          seconds: 20
+          milliseconds: 0
+      - service: switch.turn_on
+        data: {}
+        target:
+          entity_id: switch.heizung
+      - delay:
+          hours: 0
+          minutes: 0
+          seconds: 10
+          milliseconds: 0
+      - service: utility_meter.calibrate
+        data:
+          value: '0'
+        target:
+          entity_id: sensor.heizung_buro_eg
+      - service: climate.set_temperature
+        data:
+          temperature: 22
+        target:
+          entity_id: climate.wonderwall_smart
       - device_id: 425dad6fd8a6bdd15fb3fa3a208ac79d
         domain: climate
         entity_id: climate.wonderwall_smart
@@ -990,4 +853,618 @@
         entity_id: climate.wonderwall_smart
         type: set_hvac_mode
         hvac_mode: 'off'
+  mode: single
+- id: '1671230243789'
+  alias: '[Benachrichtigung] Waschmaschine Starten'
+  description: ''
+  trigger:
+  - platform: numeric_state
+    entity_id: sensor.waschmaschine_current_power
+    for:
+      hours: 0
+      minutes: 5
+      seconds: 0
+    above: 5
+  condition:
+  - condition: state
+    entity_id: input_boolean.waschmaschine_lauft
+    state: 'off'
+  action:
+  - service: script.benachrichtigung_waschtemperatur
+    data: {}
+  - service: input_datetime.set_datetime
+    data_template:
+      datetime: '{{ now().strftime(''%Y-%m-%d %H:%M:%S'')}}'
+    target:
+      entity_id: input_datetime.waschmaschine_startzeit
+  - service: input_datetime.set_datetime
+    data_template:
+      datetime: '{{(((state_attr(''input_datetime.waschmaschine_startzeit'' , ''timestamp''))
+        - 300) | timestamp_custom(''%Y-%m-%d %H:%M'', true))}}'
+    target:
+      entity_id: input_datetime.waschmaschine_startzeit
+    alias: ' Setze Waschmaschine Startzeit -5 Minuten'
+  - service: input_boolean.turn_on
+    data: {}
+    target:
+      entity_id: input_boolean.waschmaschine_lauft
+  mode: single
+- id: '1671230617831'
+  alias: '[Event-Handler] Waschtemperatur'
+  description: ''
+  trigger:
+  - platform: event
+    event_type: mobile_app_notification_action
+    event_data:
+      action: TEMP_30
+    id: temp_30
+  - platform: event
+    event_type: mobile_app_notification_action
+    event_data:
+      action: TEMP_40
+    id: temp_40
+  - platform: event
+    event_type: mobile_app_notification_action
+    event_data:
+      action: TEMP_90
+    id: temp_90
+  condition: []
+  action:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id: temp_30
+      sequence:
+      - service: input_text.set_value
+        data:
+          value: 30°
+        target:
+          entity_id: input_text.waschtemperatur
+    - conditions:
+      - condition: trigger
+        id: temp_40
+      sequence:
+      - service: input_text.set_value
+        data:
+          value: 40°
+        target:
+          entity_id:
+          - input_text.waschtemperatur
+    - conditions:
+      - condition: trigger
+        id: temp_90
+      sequence:
+      - service: input_text.set_value
+        data:
+          value: 90°
+        target:
+          entity_id: input_text.waschtemperatur
+  mode: single
+- id: '1671233482941'
+  alias: '[Benachrichtigung] Waschmaschine fertig'
+  description: ''
+  trigger:
+  - platform: numeric_state
+    entity_id: sensor.waschmaschine_current_power
+    below: '5'
+    for:
+      hours: 0
+      minutes: 5
+      seconds: 0
+  condition:
+  - condition: state
+    entity_id: input_boolean.waschmaschine_lauft
+    state: 'on'
+  action:
+  - service: counter.increment
+    data: {}
+    target:
+      entity_id: counter.waschzyklen
+    enabled: false
+  - service: input_boolean.turn_off
+    data: {}
+    target:
+      entity_id: input_boolean.waschmaschine_lauft
+    enabled: false
+  - service: notify.familie
+    data:
+      message: Die Waschmaschine ist fertig! Hol die Wäsche raus
+      title: Waschmaschine
+    enabled: false
+  - type: turn_off
+    device_id: d8fbe6ea6daa3c2efa0cb6c1a44d9d56
+    entity_id: switch.waschmaschine
+    domain: switch
+    enabled: false
+  - service: script.actions_automation_waschmaschine_ende
+    data: {}
+  mode: single
+- id: '1677256394258'
+  alias: '[Beleuchtung] LED Steuerung mit STYRBAR'
+  description: ''
+  use_blueprint:
+    path: wavs/zigbee2mqtt-ikea-styrbar-4-button-remote-e2001-e2002.yaml
+    input:
+      remote: sensor.ikea_styrbar_remote_control_action
+      button_on:
+      - service: light.turn_on
+        data:
+          brightness_pct: 100
+        target:
+          entity_id: light.ikea_icpshc24_30eu_il_1
+      button_off:
+      - service: light.turn_off
+        target:
+          entity_id: light.ikea_icpshc24_30eu_il_1
+        data: {}
+      button_left_click:
+      - device_id: 4fbc486f040bae4bca600de7d48ad853
+        domain: light
+        entity_id: light.ikea_icpshc24_30eu_il_1
+        type: brightness_increase
+      button_right_click:
+      - device_id: 4fbc486f040bae4bca600de7d48ad853
+        domain: light
+        entity_id: light.ikea_icpshc24_30eu_il_1
+        type: brightness_decrease
+      button_brightness_move_up: []
+      button_brightness_move_down: []
+- id: '1677362225228'
+  alias: '[Beleuchtung] Wohnzimmer ausschalten'
+  description: ''
+  trigger:
+  - type: no_motion
+    platform: device
+    device_id: 0b0f1ca2518a064c17689af6d0651bca
+    entity_id: binary_sensor.ikea_tradfri_bewegungsmelder_occupancy
+    domain: binary_sensor
+    id: bewegung_erkannt
+  - platform: event
+    event_type: timer.finished
+    event_data:
+      entity_id: timer.timer_lichter_aus_5_min
+    id: lichter_5min_vorher
+  - platform: event
+    event_type: timer.finished
+    event_data:
+      entity_id: timer.timer_lichter_aus_10_min
+    id: lichter_nach_10min
+  condition: []
+  action:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id: bewegung_erkannt
+      sequence:
+      - service: timer.start
+        data:
+          duration: 0
+        target:
+          entity_id:
+          - timer.timer_lichter_aus_10_min
+          - timer.timer_lichter_aus_5_min
+    - conditions:
+      - condition: trigger
+        id: lichter_5min_vorher
+      sequence:
+      - service: notify.alexa_media
+        data:
+          message: Das Licht im Wohnzimmer wird in 5 Minuten ausgeschalten.
+          data:
+            type: announce
+          target: media_player.alle_echos
+    - conditions:
+      - condition: trigger
+        id: lichter_nach_10min
+      sequence:
+      - service: notify.alexa_media
+        data:
+          message: Das Licht im Wohnzimmer wird in 10 Sekunden ausgeschalten.
+          data:
+            type: announce
+          target: media_player.alle_echos
+      - delay:
+          hours: 0
+          minutes: 0
+          seconds: 10
+          milliseconds: 0
+      - service: light.turn_off
+        data: {}
+        target:
+          entity_id:
+          - light.licht_links
+          - light.licht_rechts
+  mode: single
+- id: '1678180079222'
+  description: ''
+  trigger:
+  - platform: time
+    at: 08:00:00
+  condition:
+  - condition: state
+    entity_id: calendar.abfallplus
+    state: 'on'
+  - condition: state
+    entity_id: input_boolean.urlaub
+    state: 'off'
+    alias: Wenn Urlaub an, nicht laufen
+  action:
+  - service: notify.mobile_app_iphone_11_pro_max
+    data:
+      message: '{{ state_attr(''calendar.abfallplus'', ''message'') }}'
+  mode: single
+- id: '1679748953251'
+  alias: '[Überwachung] Lüftern von Räumen'
+  description: ''
+  trigger:
+  - platform: numeric_state
+    entity_id: sensor.absolute_luftfeuchtigkeit_unterschied_buro_eg
+    above: 4
+    id: zuhoch_büro_eg
+  - platform: numeric_state
+    entity_id: sensor.absolute_luftfeuchtigkeit_unterschied_buro_eg
+    below: 3.5
+    id: wiedergut_büro_eg
+  - platform: numeric_state
+    entity_id: sensor.absolute_luftfeuchtigkeit_unterschied_wohnzimmer
+    above: 4
+    id: zuhoch_wohnzimmer
+  - platform: numeric_state
+    entity_id: sensor.absolute_luftfeuchtigkeit_unterschied_wohnzimmer
+    below: 3.5
+    id: wiedergut_wohnzimmer
+  - platform: numeric_state
+    entity_id: sensor.absolute_luftfeuchtigkeit_unterschied_schlafzimmer
+    above: 4
+    id: zuhoch_schlafzimmer
+  - platform: numeric_state
+    entity_id: sensor.absolute_luftfeuchtigkeit_unterschied_schlafzimmer
+    below: 3.5
+    id: wiedergut_schlafzimmer
+  - platform: numeric_state
+    entity_id: sensor.absolute_luftfeuchtigkeit_unterschied_kinderzimmer_1_og
+    above: 4
+    id: zuhoch_kinderzimmer_1_og
+  - platform: numeric_state
+    entity_id: sensor.absolute_luftfeuchtigkeit_unterschied_kinderzimmer_1_og
+    below: 3.5
+    id: wiedergut_kinderzimmer_1_og
+  - platform: numeric_state
+    entity_id: sensor.absolute_luftfeuchtigkeit_unterschied_kinderzimmer_eg
+    above: 4
+    id: zuhoch_kinderzimmer_eg
+  - platform: numeric_state
+    entity_id: sensor.absolute_luftfeuchtigkeit_unterschied_kinderzimmer_eg
+    below: 3.5
+    id: wiedergut_kinderzimmer_eg
+  condition:
+  - condition: numeric_state
+    entity_id: zone.home
+    above: 1
+  action:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id: zuhoch_büro_eg
+      - condition: time
+        after: 07:00:00
+        before: '21:00:00'
+      - condition: state
+        entity_id: binary_sensor.fensterkontakt_buro_eg_contact
+        state: 'off'
+      sequence:
+      - service: notify.mobile_app_iphone_11_pro_max
+        data:
+          message: Die Luftfeuchtigkeit im Büro EG ist hoch im Vergleich zu außen.
+            Bitte Lüften
+          title: LÜFTEN
+    - conditions:
+      - condition: trigger
+        id: wiedergut_büro_eg
+      - condition: time
+        after: 07:00:00
+        before: '21:00:00'
+      sequence:
+      - service: notify.mobile_app_iphone_11_pro_max
+        data:
+          message: Es ist Trocken genug kannst wieder Fenster zu machen
+          title: LÜFTEN
+    alias: Büro EG
+  - choose:
+    - conditions:
+      - condition: trigger
+        id: zuhoch_wohnzimmer
+      - condition: time
+        after: 07:00:00
+        before: '21:00:00'
+      - condition: state
+        entity_id: binary_sensor.fensterkontakt_wohnzimmer_links_contact
+        state: 'off'
+      - condition: state
+        entity_id: binary_sensor.fensterkontakt_wohnzimmer_rechts_contact
+        state: 'off'
+      sequence:
+      - service: notify.mobile_app_iphone_11_pro_max
+        data:
+          message: Die Luftfeuchtigkeit im Wohnzimmer ist zu hoch im Vergleich zu
+            außen. Bitte Lüften
+          title: LÜFTEN
+    - conditions:
+      - condition: trigger
+        id: wiedergut_wohnzimmer
+      - condition: time
+        after: 07:00:00
+        before: '21:00:00'
+      sequence:
+      - service: notify.mobile_app_iphone_11_pro_max
+        data:
+          message: Es ist Trocken genug kannst wieder Fenster zu machen
+          title: LÜFTEN
+    alias: Wohnzimmer
+  - choose:
+    - conditions:
+      - condition: trigger
+        id: zuhoch_schlafzimmer
+      - condition: time
+        after: 07:00:00
+        before: '21:00:00'
+      - condition: state
+        entity_id: binary_sensor.turkontakt_schlafzimmer_contact
+        state: 'off'
+      sequence:
+      - service: notify.mobile_app_iphone_11_pro_max
+        data:
+          message: Die Luftfeuchtigkeit im Schlafzimmer ist zu hoch im Vergleich zu
+            außen. Bitte Lüften
+          title: LÜFTEN
+    - conditions:
+      - condition: trigger
+        id: wiedergut_schlafzimmer
+      - condition: time
+        after: 07:00:00
+        before: '21:00:00'
+      sequence:
+      - service: notify.mobile_app_iphone_11_pro_max
+        data:
+          message: Es ist Trocken genug kannst wieder Fenster zu machen
+          title: LÜFTEN
+    alias: Schlafzimmer
+  - choose:
+    - conditions:
+      - condition: trigger
+        id: zuhoch_kinderzimmer_1_og
+      - condition: time
+        after: 07:00:00
+        before: '21:00:00'
+      - condition: state
+        entity_id: binary_sensor.fensterkontakt_kinderzimmer_1_og_contact
+        state: 'off'
+      sequence:
+      - service: notify.mobile_app_iphone_11_pro_max
+        data:
+          message: Die Luftfeuchtigkeit im Kinderzimmer 1. OG ist zu hoch im Vergleich
+            zu außen. Bitte Lüften
+          title: LÜFTEN
+    - conditions:
+      - condition: trigger
+        id: wiedergut_kinderzimmer_1_og
+      - condition: time
+        after: 07:00:00
+        before: '21:00:00'
+      sequence:
+      - service: notify.mobile_app_iphone_11_pro_max
+        data:
+          message: Es ist Trocken genug kannst wieder Fenster zu machen
+          title: LÜFTEN
+    alias: Kinderzimmer 1. OG
+  - choose:
+    - conditions:
+      - condition: trigger
+        id: zuhoch_kinderzimmer_eg
+      - condition: time
+        after: 07:00:00
+        before: '21:00:00'
+      - condition: state
+        entity_id: binary_sensor.fensterkontakt_kinderzimmer_eg_contact
+        state: 'off'
+      sequence:
+      - service: notify.mobile_app_iphone_11_pro_max
+        data:
+          message: Die Luftfeuchtigkeit im Kinderzimmer EG ist zu hoch im Vergleich
+            zu außen. Bitte Lüften
+          title: LÜFTEN
+    - conditions:
+      - condition: trigger
+        id: wiedergut_kinderzimmer_eg
+      - condition: time
+        after: 07:00:00
+        before: '21:00:00'
+      sequence:
+      - service: notify.mobile_app_iphone_11_pro_max
+        data:
+          message: Es ist Trocken genug kannst wieder Fenster zu machen
+          title: LÜFTEN
+    alias: Kinderzimmer EG
+  mode: parallel
+  max: 10
+- id: '1680384019104'
+  alias: '[Benachrichtigung / Müll] Welcher Müll morgen abgeholt wird'
+  description: ''
+  trigger:
+  - platform: time
+    at: '16:00:00'
+  condition:
+  - condition: template
+    value_template: '{% set datum_morgen = (now().date() + timedelta(days=1))|string
+      + '' 00:00:00'' %}
+
+      {% set abfall_abholung= state_attr(''calendar.abfallplus'', ''start_time'')
+      %}
+
+
+      {{datum_morgen == abfall_abholung }}
+
+      '
+  - condition: state
+    entity_id: input_boolean.urlaub
+    state: 'off'
+  action:
+  - service: notify.mobile_app_iphone_11_pro_max
+    data:
+      message: Morgen ist {{ state_attr('calendar.abfallplus', 'message') }}
+      title: Abfall Information
+  - if:
+    - condition: template
+      value_template: '{% set abfall_art = state_attr(''calendar.abfallplus'', ''message'')  %}
+
+        {% set typ = ''Blaue Tonne'' %}
+
+
+        {{ typ == abfall_art }}'
+    then:
+    - service: media_player.play_media
+      data:
+        media_content_id: music
+        media_content_type: http://192.168.178.53:8123/local/sounds/blaue_Tonne_morgen.mp3
+      target:
+        entity_id: media_player.alle_echos
+    alias: Prüfen ob Blaue Tonne ist
+  - if:
+    - condition: template
+      value_template: '{% set abfall_art = state_attr(''calendar.abfallplus'', ''message'')  %}
+
+        {% set typ = ''Biotonne'' %}
+
+
+        {{ typ == abfall_art }}'
+    then:
+    - service: media_player.play_media
+      data:
+        media_content_id: music
+        media_content_type: http://192.168.178.53:8123/local/sounds/bio_Tonne_morgen.mp3
+      target:
+        entity_id: media_player.alle_echos
+    alias: Prüfen ob Biotonne ist
+  - if:
+    - condition: template
+      value_template: '{% set abfall_art = state_attr(''calendar.abfallplus'', ''message'')  %}
+
+        {% set typ = ''Gelber Sack'' %}
+
+
+        {{ typ == abfall_art }}'
+    then:
+    - service: media_player.play_media
+      data:
+        media_content_id: music
+        media_content_type: http://192.168.178.53:8123/local/sounds/gelber_Sack_morgen.mp3
+      target:
+        entity_id: media_player.alle_echos
+    alias: Prüfen ob Gelber Sack ist
+  - if:
+    - condition: template
+      value_template: '{% set abfall_art = state_attr(''calendar.abfallplus'', ''message'')  %}
+
+        {% set typ = ''Schadstoffsammlung'' %}
+
+
+        {{ typ == abfall_art }}'
+    then:
+    - service: media_player.play_media
+      data:
+        media_content_id: music
+        media_content_type: https://ha.homelab.local/local/sounds/Schadstoffsammlung_morgen.mp3
+      target:
+        entity_id: media_player.bad
+    alias: Prüfen ob Schadstoffsammlung ist
+  mode: single
+- id: '1682312657639'
+  alias: '[Überwachung] Haustür 10 Minuten offen'
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - binary_sensor.haustur_door_sensor
+    from: 'off'
+    to: 'on'
+    id: haustür_geöffnet
+  - platform: event
+    event_type: timer.finished
+    event_data:
+      entity_id: timer.haustur_offen
+    id: haustür_weiter_geöffnet
+  - platform: state
+    entity_id:
+    - binary_sensor.haustur_door_sensor
+    from: 'on'
+    to: 'off'
+    id: haustür_geschloßen
+  condition: []
+  action:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id: haustür_geöffnet
+      sequence:
+      - service: timer.start
+        data: {}
+        target:
+          entity_id: timer.haustur_offen
+    - conditions:
+      - condition: trigger
+        id: haustür_weiter_geöffnet
+      sequence:
+      - service: notify.familie
+        data:
+          title: Haustür
+          message: Die Haustüre steht seit 10 Minuten offen. Bitte schaue nach, was
+            los ist.
+    - conditions:
+      - condition: trigger
+        id: haustür_geschloßen
+      sequence:
+      - service: timer.cancel
+        data: {}
+        target:
+          entity_id: timer.haustur_offen
+  mode: single
+- id: '1684161645755'
+  alias: '[Heizen] Bad 1. OG'
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - binary_sensor.fensterkontakt_bad_1_og_contact
+    from: 'off'
+    to: 'on'
+    id: Bad Fenster wurde geöffnet
+  - platform: state
+    entity_id:
+    - binary_sensor.fensterkontakt_bad_1_og_contact
+    from: 'on'
+    to: 'off'
+    id: Bad Fenster wurde geschlossen
+  condition: []
+  action:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id: Bad Fenster wurde geöffnet
+      sequence:
+      - service: climate.turn_off
+        data: {}
+        target:
+          entity_id: climate.bad_thermostat
+    - conditions:
+      - condition: trigger
+        id: Bad Fenster wurde geschlossen
+      sequence:
+      - service: climate.turn_on
+        data: {}
+        target:
+          entity_id: climate.bad_thermostat
+      - service: notify.alexa_media_bad
+        data:
+          message: Die Fußbodenheizung wurde wieder eingeschalten und heizten auf
+            {{state_attr('climate.bad_thermostat','current_heating_setpoint')}} °C
   mode: single

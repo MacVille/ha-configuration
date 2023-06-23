@@ -1,4 +1,4 @@
-#SNMP Zeug
+##SNMP Zeug
 ##Temperatur Parity Drive
 #- platform: snmp
 #  name: 'UnRAID PARITY Temperature'  
@@ -20,6 +20,30 @@
 #  community: public
 #  version: 2c
 #  baseoid: .1.3.6.1.4.1.8072.1.3.2.4.1.2.8.100.105.115.107.116.101.109.112.2
+#  accept_errors: false
+#  value_template: >
+#    {{ value.split(':')[1].strip() }}
+#  unit_of_measurement: '°C'
+##Temperatur Disk 2
+#- platform: snmp
+#  name: 'UnRAID DISK2 Temperature'
+#  host: 192.168.178.2
+#  port: 161
+#  community: public
+#  version: 2c
+#  baseoid: .1.3.6.1.4.1.8072.1.3.2.4.1.2.8.100.105.115.107.116.101.109.112.3
+#  accept_errors: false
+#  value_template: >
+#    {{ value.split(':')[1].strip() }}
+#  unit_of_measurement: '°C'
+##Temperatur Disk 3
+#- platform: snmp
+#  name: 'UnRAID DISK3 Temperature'
+#  host: 192.168.178.2
+#  port: 161
+#  community: public
+#  version: 2c
+#  baseoid: .1.3.6.1.4.1.8072.1.3.2.4.1.2.8.100.105.115.107.116.101.109.112.4
 #  accept_errors: false
 #  value_template: >
 #    {{ value.split(':')[1].strip() }}

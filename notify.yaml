@@ -44,3 +44,11 @@
 - name: File_Export_Stromdaten_jaehrlich
   platform: file
   filename: /config/exporte/Stromdaten_jaehrlich.csv
+
+- name: File_Export_Waschmaschine_Verlauf_Temp_Strom
+  platform: file
+  filename: /config/exporte/Waschmaschine_Verlauf_Temp_Strom.csv
+
+- name: File_Export_Trockner_Verlauf_Strom
+  platform: file
+  filename: /config/exporte/Trockner_Verlauf_Strom.csv
