@@ -66,6 +66,7 @@ font:
       "\U000F10C3", # mdi-thermometer-low
       "\U000F06EE",  # mdi:mailbox
       "\U000F0D88" #mdi:mailbox-open
+      #"\U000F058E" #mdi-water-percent
       ]
        
   - file: 'fonts/materialdesignicons-webfont.ttf'
@@ -108,7 +109,8 @@ font:
       "\U000F059D", # weather-windy
       "\U000F059E", # weather-windy-variant
       "\U000F06EE",  # mdi:mailbox
-      "\U000F0D88" #mdi:mailbox-open
+      "\U000F0D88", #mdi:mailbox-open
+      "\U000F058E" #mdi-water-percent
       ]
        
   - file: 'fonts/materialdesignicons-webfont.ttf'
@@ -146,7 +148,8 @@ font:
       "\U000F059D", # weather-windy
       "\U000F059E", # weather-windy-variant
       "\U000F06EE",  # mdi:mailbox
-      "\U000F0D88" #mdi:mailbox-open
+      "\U000F0D88", #mdi:mailbox-open
+      "\U000F058E" #mdi-water-percent
     ]   
 display:
   - platform: waveshare_epaper
@@ -154,7 +157,7 @@ display:
     dc_pin: 19
     busy_pin: 17
     reset_pin: 16
-    model: 7.50inv2
+    model: 7.50inv2alt
     update_interval: 60s
     lambda: |
      int x, y;
@@ -175,14 +178,14 @@ display:
       
      // Temperature inside / outside
      it.printf(100, 35, id(materialdesign_icons_25), TextAlign::BASELINE_LEFT, "\U000F0F54"); 
-     //it.printf(130, 40, id(openSansBold_font), TextAlign::BOTTOM_LEFT, "%s °C", id(temperature_inside).state.c_str()); // use your own temp sensor
+     //it.printf(130, 40, id(openSansBold_font), TextAlign::BOTTOM_LEFT, "%s °C", id(temperature_inside).state); // use your own temp sensor
       
-     it.printf(100, 65, id(materialdesign_icons_25), TextAlign::BASELINE_LEFT, "\U000F0F55"); 
-     //it.printf(130, 70, id(openSansBold_font), TextAlign::BOTTOM_LEFT, "%s °C", id(temperature_outside).state.c_str());// use your own temp sensor
+     it.printf(100, 65, id(materialdesign_icons_25), TextAlign::BASELINE_LEFT, "\U000F058E"); 
+     //it.printf(130, 70, id(openSansBold_font), TextAlign::BOTTOM_LEFT, "%s %", id(humidity_inside).state);// use your own temp sensor
       
      //Time
      it.strftime(540, 100, id(watch_font),TextAlign::BOTTOM_LEFT, "%H:%M", id(time_homeassistant).now());
-     it.strftime(540, 110, id(openSansBold_font),TextAlign::BOTTOM_LEFT, "%A, %d.%m.%y, KW %W", id(time_homeassistant).now());
+     it.strftime(480, 110, id(openSansBold_font),TextAlign::BOTTOM_LEFT, "%A, %d.%m.%y, KW %W", id(time_homeassistant).now());
        
      // Current weather 
      // https://www.home-assistant.io/integrations/weather/
@@ -310,7 +313,6 @@ display:
      if (id(uptime_human).has_state()) {
          it.printf(520, 470, id(openSansBold_font), TextAlign::BASELINE_LEFT, "UpTime: %s", id(uptime_human).state.c_str());
      }
-
 # --- Sensors ------------------------------------------------------------------
 sensor:
   - platform: dht
@@ -382,6 +384,15 @@ text_sensor:
     id: epaper_sunset
     entity_id: sensor.epaper_sunset   
     internal: true
+  
+  - platform: homeassistant
+    id: temperature_inside
+    entity_id: sensor.bad_epaper_temperature
+    internal: True
+  - platform: homeassistant
+    id: humidity_inside
+    entity_id: sensor.bad_epaper_humidity
+    internal: True  
  
 time:
   - platform: homeassistant
