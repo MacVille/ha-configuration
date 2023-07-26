@@ -13,10 +13,10 @@ logger:
 # Enable Home Assistant API
 api:
   encryption:
-    key: "SUPERGEHEIM"
+    key: "z43o369L/Ubo4N2Sho5LqPPwcYavA7tCDje6y9RRMqc="
 
 ota:
-  password: "SUPERGEHEIM"
+  password: "84a94345d4e8572a31eff75407bd8649"
 
 wifi:
   ssid: !secret wifi_ssid
@@ -25,7 +25,7 @@ wifi:
   # Enable fallback hotspot (captive portal) in case wifi connection fails
   ap:
     ssid: "Epaper Fallback Hotspot"
-    password: "SUPERGEHEIM"
+    password: "0CY4VsYYp199"
 
 captive_portal:
 spi:
@@ -43,7 +43,51 @@ font:
        'T', 'U', 'V', 'W', 'X', 'Y', 'Z', ' ', 'a', 'b', 'c', 'd', 'e', 'f',
        'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't',
        'u', 'v', 'w', 'x', 'y', 'z', 'å', 'ä', 'ö', 'ü', 'Ä', 'Ö', 'Ü', '/', '€', '’', 'ß']
- 
+
+  - file: 'fonts/OpenSans-Bold.ttf'
+    id: openSansBold_font_25
+    size: 25
+    glyphs:
+      ['&', '@', '!', '?', ',', '.', '"', '%', '(', ')', '+', '-', '_', ':', '°', '0',
+       '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E',
+       'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S',
+       'T', 'U', 'V', 'W', 'X', 'Y', 'Z', ' ', 'a', 'b', 'c', 'd', 'e', 'f',
+       'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't',
+       'u', 'v', 'w', 'x', 'y', 'z', 'å', 'ä', 'ö', 'ü', 'Ä', 'Ö', 'Ü', '/', '€', '’', 'ß']
+
+  - file: 'fonts/OpenSans-Bold.ttf'
+    id: openSansBold_font_30
+    size: 30
+    glyphs:
+      ['&', '@', '!', '?', ',', '.', '"', '%', '(', ')', '+', '-', '_', ':', '°', '0',
+       '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E',
+       'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S',
+       'T', 'U', 'V', 'W', 'X', 'Y', 'Z', ' ', 'a', 'b', 'c', 'd', 'e', 'f',
+       'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't',
+       'u', 'v', 'w', 'x', 'y', 'z', 'å', 'ä', 'ö', 'ü', 'Ä', 'Ö', 'Ü', '/', '€', '’', 'ß']  
+
+  - file: 'fonts/OpenSans-Bold.ttf'
+    id: openSansBold_font_35
+    size: 35
+    glyphs:
+      ['&', '@', '!', '?', ',', '.', '"', '%', '(', ')', '+', '-', '_', ':', '°', '0',
+       '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E',
+       'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S',
+       'T', 'U', 'V', 'W', 'X', 'Y', 'Z', ' ', 'a', 'b', 'c', 'd', 'e', 'f',
+       'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't',
+       'u', 'v', 'w', 'x', 'y', 'z', 'å', 'ä', 'ö', 'ü', 'Ä', 'Ö', 'Ü', '/', '€', '’', 'ß']
+
+  - file: 'fonts/OpenSans-Bold.ttf'
+    id: openSansBold_font_40
+    size: 40
+    glyphs:
+      ['&', '@', '!', '?', ',', '.', '"', '%', '(', ')', '+', '-', '_', ':', '°', '0',
+       '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E',
+       'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S',
+       'T', 'U', 'V', 'W', 'X', 'Y', 'Z', ' ', 'a', 'b', 'c', 'd', 'e', 'f',
+       'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't',
+       'u', 'v', 'w', 'x', 'y', 'z', 'å', 'ä', 'ö', 'ü', 'Ä', 'Ö', 'Ü', '/', '€', '’', 'ß']
+
   - file: 'fonts/OpenSans-Bold.ttf'
     id: watch_font
     size: 90
@@ -65,19 +109,35 @@ font:
       "\U000F10C2", # mdi-thermometer-high
       "\U000F10C3", # mdi-thermometer-low
       "\U000F06EE",  # mdi:mailbox
-      "\U000F0D88" #mdi:mailbox-open
-      #"\U000F058E" #mdi-water-percent
+      "\U000F0D88", #mdi:mailbox-open
       ]
-       
+
+  - file: 'fonts/materialdesignicons-webfont.ttf'
+    id: materialdesign_icons_50
+    size: 50
+    glyphs: [
+      "\U000F050F", # mdi-thermometer
+      "\U000F0F55", # mdi-home-thermometer-outline
+      "\U000F0F54", # mdi-home-thermometer
+      "\U000F058E", # mdi-water-percent
+      "\U000F029A", # mdi-gauge
+      "\U000F059B", # mdi-weather-sunset
+      "\U000F059C", # mdi-weather-sunrise
+      "\U000F10C2", # mdi-thermometer-high
+      "\U000F10C3", # mdi-thermometer-low
+      "\U000F06EE",  # mdi:mailbox
+      "\U000F0D88", #mdi:mailbox-open
+      ]
+
   - file: 'fonts/materialdesignicons-webfont.ttf'
     id: materialdesign_icons_32
     size: 32
     glyphs: [
-      "\U000F091F", # mdi-wifi-strength-1
-      "\U000F0922", # mdi-wifi-strength-2
-      "\U000F0925", # mdi-wifi-strength-3
-      "\U000F0928", # mdi-wifi-strength-4
-      "\U000F092B", # mdi-wifi-strength-alert-outline
+      "\U000F08BC", # mdi-wifi-strength-1
+      "\U000F08BD", # mdi-wifi-strength-2
+      "\U000F08BE", # mdi-wifi-strength-3
+      "\U000F04A2", # mdi-wifi-strength-4
+      "\U000F0783", # mdi-wifi-strength-alert-outline
       "\U000F0590", # weather-cloudy
       "\U000F0F2F", # weather-cloudy-alert
       "\U000F0E6E", # weather-cloudy-arrow-right
@@ -114,7 +174,7 @@ font:
       ]
        
   - file: 'fonts/materialdesignicons-webfont.ttf'
-    id: materialdesign_icons_50
+    id: materialdesign_icons_80
     size: 80
     glyphs: [
       "\U000F0590", # weather-cloudy
@@ -158,7 +218,9 @@ display:
     busy_pin: 17
     reset_pin: 16
     model: 7.50inv2alt
+    #model: 7.50inv2
     update_interval: 60s
+    rotation: 0°
     lambda: |
      int x, y;
       
@@ -170,18 +232,18 @@ display:
       
      
      // Sunrise / Sunset
-     it.printf(5, 40, id(materialdesign_icons_25), TextAlign::BASELINE_LEFT, "\U000F059C");
-     it.printf(35, 40, id(openSansBold_font), TextAlign::BOTTOM_LEFT, id(epaper_sunrise).state.c_str());
+     it.printf(5, 45, id(materialdesign_icons_50), TextAlign::BASELINE_LEFT, "\U000F059C");
+     it.printf(52, 50, id(openSansBold_font_40), TextAlign::BOTTOM_LEFT, id(epaper_sunrise).state.c_str());
        
-     it.printf(5, 70, id(materialdesign_icons_25), TextAlign::BASELINE_LEFT, "\U000F059B");
-     it.printf(35, 70, id(openSansBold_font), TextAlign::BOTTOM_LEFT, id(epaper_sunset).state.c_str());
+     it.printf(5, 85, id(materialdesign_icons_50), TextAlign::BASELINE_LEFT, "\U000F059B");
+     it.printf(52, 90, id(openSansBold_font_40), TextAlign::BOTTOM_LEFT, id(epaper_sunset).state.c_str());
       
      // Temperature inside / outside
-     it.printf(100, 35, id(materialdesign_icons_25), TextAlign::BASELINE_LEFT, "\U000F0F54"); 
-     //it.printf(130, 40, id(openSansBold_font), TextAlign::BOTTOM_LEFT, "%s °C", id(temperature_inside).state); // use your own temp sensor
+     it.printf(155, 45, id(materialdesign_icons_50), TextAlign::BASELINE_LEFT, "\U000F0F54"); 
+     it.printf(210, 50, id(openSansBold_font_40), TextAlign::BOTTOM_LEFT, "%s °C", id(temperature_inside).state.c_str()); // use your own temp sensor
       
-     it.printf(100, 65, id(materialdesign_icons_25), TextAlign::BASELINE_LEFT, "\U000F058E"); 
-     //it.printf(130, 70, id(openSansBold_font), TextAlign::BOTTOM_LEFT, "%s %", id(humidity_inside).state);// use your own temp sensor
+     it.printf(155, 85, id(materialdesign_icons_50), TextAlign::BASELINE_LEFT, "\U000F058E"); 
+     it.printf(210, 90, id(openSansBold_font_40), TextAlign::BOTTOM_LEFT, "%s \%%", id(humidity_inside).state.c_str());// use your own temp sensor
       
      //Time
      it.strftime(540, 100, id(watch_font),TextAlign::BOTTOM_LEFT, "%H:%M", id(time_homeassistant).now());
@@ -197,32 +259,41 @@ display:
       std::make_pair("cloudy","\U000F0590"),
       std::make_pair("cloudy-alert","\U000F0F2F"),
       std::make_pair("fog","\U000F0591"),
-      std::make_pair( "hail","\U000F0592"),
-      std::make_pair( "hazy","\U000F0F30"),
-      std::make_pair( "hurricane","\U000F0898"),
-      std::make_pair( "lightning","\U000F0593"),
-      std::make_pair( "lightning-rainy","\U000F067E"),
-      std::make_pair( "night","\U000F0594"),
-      std::make_pair( "clear-night","\U000F0594"),
-      std::make_pair( "night-partly-cloudy","\U000F0F31"),
-      std::make_pair( "partly-cloudy","\U000F0595"),
-      std::make_pair( "partlycloudy","\U000F0595"),
-      std::make_pair( "partly-lightning","\U000F0F32"),
-      std::make_pair( "partly-rainy","\U000F0F33"),
-      std::make_pair( "partly-snowy","\U000F0F34"),
-      std::make_pair( "partly-snowy-rainy","\U000F0F35"),
-      std::make_pair( "pouring","\U000F0596"),
-      std::make_pair( "rainy","\U000F0597"),
-      std::make_pair( "snowy","\U000F0598"),
-      std::make_pair( "snowy-heavy","\U000F0F36"),
-      std::make_pair( "snowy-rainy","\U000F067F"),
-      std::make_pair( "sunny","\U000F0599"),
-      std::make_pair( "sunny-alert","\U000F0F37"),
-      std::make_pair( "sunny-off","\U000F14E4"),
-      std::make_pair( "tornado","\U000F0F38"),
-      std::make_pair( "windy","\U000F059D"),
-      std::make_pair( "windy-variant","\U000F059E")};
-       
+      std::make_pair("hail","\U000F0592"),
+      std::make_pair("hazy","\U000F0F30"),
+      std::make_pair("hurricane","\U000F0898"),
+      std::make_pair("lightning","\U000F0593"),
+      std::make_pair("lightning-rainy","\U000F067E"),
+      std::make_pair("night","\U000F0594"),
+      std::make_pair("clear-night","\U000F0594"),
+      std::make_pair("night-partly-cloudy","\U000F0F31"),
+      std::make_pair("partly-cloudy","\U000F0595"),
+      std::make_pair("partlycloudy","\U000F0595"),
+      std::make_pair("partly-lightning","\U000F0F32"),
+      std::make_pair("partly-rainy","\U000F0F33"),
+      std::make_pair("partly-snowy","\U000F0F34"),
+      std::make_pair("partly-snowy-rainy","\U000F0F35"),
+      std::make_pair("pouring","\U000F0596"),
+      std::make_pair("rainy","\U000F0597"),
+      std::make_pair("snowy","\U000F0598"),
+      std::make_pair("snowy-heavy","\U000F0F36"),
+      std::make_pair("snowy-rainy","\U000F067F"),
+      std::make_pair("sunny","\U000F0599"),
+      std::make_pair("sunny-alert","\U000F0F37"),
+      std::make_pair("sunny-off","\U000F14E4"),
+      std::make_pair("tornado","\U000F0F38"),
+      std::make_pair("windy","\U000F059D"),
+      std::make_pair("windy-variant","\U000F059E")};
+
+     std::map <std::string, std::string> weekdayMap =  {
+      std::make_pair("Mon","Mo."),
+      std::make_pair("Tue","Di."),
+      std::make_pair("Wed","Mi."),
+      std::make_pair("Thu","Do."),
+      std::make_pair("Fri","Fr."),
+      std::make_pair("Sat","Sa."),
+      std::make_pair("Sun","So.")};
+
      if(id(epaper_weather_actual).has_state()) {
        std::string actualWeatherCSV = id(epaper_weather_actual).state; //("cloudy;5,9;50;1025,6;16,9");
        ESP_LOGI("Weather today", "%s", actualWeatherCSV.c_str());
@@ -234,7 +305,7 @@ display:
            const char * value = actualWeatherCSV.substr(previous, current - previous).c_str();
            if(i == 0) { // icon
              std::string unicodeWeatherIcon = weatherMap.at(value);
-             it.printf(x , y, id(materialdesign_icons_50), TextAlign::BASELINE_LEFT, unicodeWeatherIcon.c_str()); 
+             it.printf(x , y, id(materialdesign_icons_80), TextAlign::BASELINE_LEFT, unicodeWeatherIcon.c_str()); 
              y = 120;
              x = x + 90;
            } else if (i == 1) { // temperature
@@ -281,7 +352,21 @@ display:
            current = forecastWeatherCSV.find(delim, previous);
        }
      }
-       
+     
+     //Mittlere Spalte
+
+     //Texte für Abfälle
+     it.print(275, 155, id(openSansBold_font_25), TextAlign::BOTTOM_LEFT, "Biotonne:");
+     it.print(275, 210, id(openSansBold_font_25), TextAlign::BOTTOM_LEFT, "Blauetonne:");
+     it.print(275, 265, id(openSansBold_font_25), TextAlign::BOTTOM_LEFT,"Gelbersack:");
+     it.print(275, 320, id(openSansBold_font_25), TextAlign::BOTTOM_LEFT,"Restmüll:");
+
+     //Tage bis zum Abfall
+     it.printf(290, 170, id(openSansBold_font), TextAlign::BOTTOM_LEFT, "%s", id(abfallbiotonne).state.c_str());
+     it.printf(290, 225, id(openSansBold_font), TextAlign::BOTTOM_LEFT, "%s", id(abfallblauetonne).state.c_str());
+     it.printf(290, 280, id(openSansBold_font), TextAlign::BOTTOM_LEFT, "%s", id(abfallgelbersack).state.c_str());
+     it.printf(290, 335, id(openSansBold_font), TextAlign::BOTTOM_LEFT, "%s", id(abfallrestmuell).state.c_str());
+
      // -- Footer ---
      //IP Adress
      if (id(ip_address).has_state()) {
@@ -292,26 +377,26 @@ display:
      if(id(wifisignal).has_state()) {
        x = 210, y = 475;
        if (id(wifisignal).state >= -50) {
-           it.print(x, y, id(materialdesign_icons_32), TextAlign::BOTTOM_RIGHT, "\U000F0928");
+           it.print(x, y, id(materialdesign_icons_32), TextAlign::BOTTOM_RIGHT, "\U000F04A2");
            ESP_LOGI("WiFi", "Exellent");
        } else if (id(wifisignal).state  >= -60) {
-           it.print(x, y, id(materialdesign_icons_32), TextAlign::BOTTOM_RIGHT, "\U000F0925");
+           it.print(x, y, id(materialdesign_icons_32), TextAlign::BOTTOM_RIGHT, "\U000F08BE");
            ESP_LOGI("WiFi", "Good");
        } else if (id(wifisignal).state  >= -67) {
-           it.print(x, y, id(materialdesign_icons_32), TextAlign::BOTTOM_RIGHT, "\U000F0922");
+           it.print(x, y, id(materialdesign_icons_32), TextAlign::BOTTOM_RIGHT, "\U000F08BD");
            ESP_LOGI("WiFi", "Fair");
        } else if (id(wifisignal).state  >= -70) {
-           it.print(x, y, id(materialdesign_icons_32), TextAlign::BOTTOM_RIGHT, "\U000F091F");
+           it.print(x, y, id(materialdesign_icons_32), TextAlign::BOTTOM_RIGHT, "\U000F08BC");
            ESP_LOGI("WiFi", "Weak");
        } else {
-           it.print(x, y, id(materialdesign_icons_32), TextAlign::BOTTOM_RIGHT, "\U000F092B");
+           it.print(x, y, id(materialdesign_icons_32), TextAlign::BOTTOM_RIGHT, "\U000F0783");
            ESP_LOGI("WiFi", "Unlikely");
        }
      }
       
      // ESP Home UpTime
      if (id(uptime_human).has_state()) {
-         it.printf(520, 470, id(openSansBold_font), TextAlign::BASELINE_LEFT, "UpTime: %s", id(uptime_human).state.c_str());
+         it.printf(520, 470, id(openSansBold_font), TextAlign::BASELINE_LEFT, "Uptime: %s", id(uptime_human).state.c_str());
      }
 # --- Sensors ------------------------------------------------------------------
 sensor:
@@ -320,9 +405,11 @@ sensor:
     temperature:
       name: "Temperature"
       accuracy_decimals: 2
+      #id: temperature_inside
     humidity:
       name: "Humidity"
       accuracy_decimals: 2
+      #id: humidity_inside
     update_interval: 30s
     model: DHT22
 
@@ -353,7 +440,7 @@ sensor:
     id: wifisignal
     name: WiFi Signal
     update_interval: 60s
- 
+
 text_sensor:
   # ESP WLAN IP Address
   - platform: wifi_info
@@ -384,7 +471,8 @@ text_sensor:
     id: epaper_sunset
     entity_id: sensor.epaper_sunset   
     internal: true
-  
+
+#Eigene Textsensoren aus HA raus
   - platform: homeassistant
     id: temperature_inside
     entity_id: sensor.bad_epaper_temperature
@@ -392,8 +480,24 @@ text_sensor:
   - platform: homeassistant
     id: humidity_inside
     entity_id: sensor.bad_epaper_humidity
-    internal: True  
- 
+    internal: True
+
+  - platform: homeassistant
+    id: abfallrestmuell
+    entity_id: sensor.epaper_abfallrestmuell
+    internal: True
+  - platform: homeassistant
+    id: abfallblauetonne
+    entity_id: sensor.epaper_abfallblauetonne
+    internal: True
+  - platform: homeassistant
+    id: abfallbiotonne
+    entity_id: sensor.epaper_abfallbiotonne
+    internal: True
+  - platform: homeassistant
+    id: abfallgelbersack
+    entity_id: sensor.epaper_abfallgelbersack
+    internal: True    
 time:
   - platform: homeassistant
     id: time_homeassistant
