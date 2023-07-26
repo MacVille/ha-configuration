@@ -13,10 +13,10 @@ logger:
 # Enable Home Assistant API
 api:
   encryption:
-    key: "z43o369L/Ubo4N2Sho5LqPPwcYavA7tCDje6y9RRMqc="
+    key: "SUPERGEHEIM"
 
 ota:
-  password: "84a94345d4e8572a31eff75407bd8649"
+  password: "SUPERGEHEIM"
 
 wifi:
   ssid: !secret wifi_ssid
@@ -25,7 +25,7 @@ wifi:
   # Enable fallback hotspot (captive portal) in case wifi connection fails
   ap:
     ssid: "Epaper Fallback Hotspot"
-    password: "0CY4VsYYp199"
+    password: "SUPERGEHEIM"
 
 captive_portal:
 spi:
